@@ -18,9 +18,9 @@
 import logging
 
 import numpy as np
+import tensorflow as tf
 
-from ady.yolo_v3 import non_max_suppression
-from ady.utils import *
+import ady.yolo_v3 as yolo
 
 
 # Size of the input image for the detector.
@@ -53,7 +53,7 @@ class AdDetector:
         config = tf.ConfigProto()
         self.tf_session = tf.Session(config=config)
         logging.info('Booting YOLO and loading weights from %s', weights_file)
-        self.detections, self.boxes = init_yolo(
+        self.detections, self.boxes = yolo.init(
             self.tf_session, self.inputs, len(classes),
             weights_file, header_size=4,
         )
@@ -69,7 +69,7 @@ class AdDetector:
             self.boxes,
             feed_dict={self.inputs: [np.array(img, dtype=np.float32)]},
         )
-        unique_boxes = non_max_suppression(
+        unique_boxes = yolo.non_max_suppression(
             detected_boxes,
             confidence_threshold=CONF_THRESHOLD,
             iou_threshold=IOU_THRESHOLD,

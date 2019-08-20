@@ -429,3 +429,15 @@ def non_max_suppression(predictions_with_boxes, confidence_threshold, iou_thresh
                 cls_scores = cls_scores[np.nonzero(iou_mask)]
 
     return result
+
+
+def init(sess, inputs, num_classes, weights, header_size=5):
+    """Initialize the model and load the weights."""
+    with tf.variable_scope('detector'):
+        detections = yolo_v3(inputs, num_classes, data_format='NHWC')
+        load_ops = load_weights(tf.global_variables(scope='detector'),
+                                weights, header_size=header_size)
+
+    boxes = detections_boxes(detections)
+    sess.run(load_ops)
+    return detections, boxes
