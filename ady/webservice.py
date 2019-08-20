@@ -17,102 +17,14 @@
 
 import json
 import logging
-import os
 from timeit import default_timer as timer
 
 import flask
-import numpy as np
+import PIL
 import paste.translogger as tl
-from PIL import Image
 import waitress
 
-from ady.yolo_v3 import non_max_suppression
-from ady.utils import *
-
-
-# Size of the input image for the detector.
-YOLO_SIZE = 416
-
-# Detection parameters
-CONF_THRESHOLD = 0.5  # Level of confidence that we count as detection.
-IOU_THRESHOLD = 0.4   # IOU above which two boxes are considered the same.
-
-# Region type (a.k.a. class) that means "advertisement".
-AD_TYPE = 0
-
-
-def scale_box(box, img_size):
-    """Scale detected box to match image size."""
-    xscale = img_size[0] / YOLO_SIZE
-    yscale = img_size[1] / YOLO_SIZE
-    x0, y0, x1, y1 = box
-    return [
-        float(x0) * xscale,
-        float(y0) * yscale,
-        float(x1) * xscale,
-        float(y1) * yscale,
-    ]
-
-
-class AdDetector:
-    """Ad detector that encapsulates TF session and detection model."""
-
-    def __init__(self, weights_file):
-        classes = {AD_TYPE: 'ad'}
-        self.inputs = tf.placeholder(tf.float32,
-                                     [None, YOLO_SIZE, YOLO_SIZE, 3])
-        config = tf.ConfigProto()
-        logging.info('Initializing TF session')
-        self.tf_session = tf.Session(config=config)
-        logging.info('Initializing YOLOv3 and loading weights from %s',
-                     weights_file)
-        self.detections, self.boxes = init_yolo(
-            self.tf_session, self.inputs, len(classes),
-            weights_file, header_size=4,
-        )
-        logging.info('Done')
-
-    def detect(self, image):
-        """Detect ads in the image, return detection results as a dict.
-
-        The return value is as follows:
-
-            {
-                'size': [image_width, image_height],
-                'boxes': [
-                    [x0, y0, x1, y1, probability],
-                    ...
-                ],
-            }
-
-        """
-        img = image.resize((YOLO_SIZE, YOLO_SIZE))
-        if img.mode == 'RGBA':
-            img = img.convert(mode='RGB')
-
-        logging.info('Detecting ads')
-        t1 = timer()
-        detected_boxes = self.tf_session.run(
-            self.boxes,
-            feed_dict={self.inputs: [np.array(img, dtype=np.float32)]},
-        )
-        unique_boxes = non_max_suppression(
-            detected_boxes,
-            confidence_threshold=CONF_THRESHOLD,
-            iou_threshold=IOU_THRESHOLD,
-        )
-        boxes = [scale_box(box, image.size) + [float(p)]
-                 for box, p in unique_boxes[AD_TYPE]]
-        t2 = timer()
-        logging.debug('Detected boxes: {}'.format(boxes))
-        logging.info('Detection complete: found {} ads in {} seconds'
-                     .format(len(boxes), t2 - t1))
-
-        return {
-            'size': image.size,
-            'boxes': boxes,
-            'detection_time': t2 - t1,
-        }
+from ady.detector import AdDetector
 
 
 app = flask.Flask(__name__)
@@ -135,24 +47,32 @@ def index():
 @app.route('/detect', methods=['POST'])
 def detect():
     image_file = flask.request.files['image']
-    image = Image.open(image_file)
-    response_body = json.dumps(app.detector.detect(image))
+    image = PIL.Image.open(image_file)
+
+    logging.info('Detecting ads')
+    t1 = timer()
+    boxes = app.detector.detect(image)
+    t2 = timer()
+    logging.debug('Detected boxes: {}'.format(boxes))
+    logging.info('Detection complete: found {} ads in {} seconds'
+                 .format(len(boxes), t2 - t1))
+
+    response_body = json.dumps({
+        'size': image.size,
+        'boxes': boxes,
+        'detection_time': t2 - t1,
+    })
     response_headers = {
         'Content-type': 'application/json',
     }
     return response_body, response_headers
 
 
-def serve(argv):
+def main():
+    logging.basicConfig(level=logging.INFO)
     app.detector = AdDetector('../ad-versarial/models/page_based_yolov3.weights')
     waitress.serve(tl.TransLogger(app, setup_console_handler=False),
                    listen='*:8080')
-
-
-def main():
-    logging.basicConfig(level=logging.INFO)
-    serve([])
-    # tf.app.run(main=serve)
 
 
 if __name__ == '__main__':
