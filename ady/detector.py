@@ -13,24 +13,23 @@
 # You should have received a copy of the GNU General Public License
 # along with Ad Detect YOLO. If not, see <http://www.gnu.org/licenses/>.
 
-"""Flask-based web service that detects ads in screenshots."""
+"""YOLOv3-based ad detector."""
 
 import logging
+import os
+import warnings
 
 import numpy as np
 
-# Importing TensorFlow produces lots of warnings that get in the way and are
-# out of our control so we silence them.
-logging.getLogger().setLevel(logging.ERROR)
-logging.captureWarnings(True)
-import tensorflow
-tf = tensorflow.compat.v1
-logging.captureWarnings(False)
+# Importing TensorFlow and YOLO produces lots of warnings that get in the way
+# and are out of our control so we silence them.
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    import tensorflow
+    import ady.yolo_v3 as yolo
+    tf = tensorflow.compat.v1
 
-import ady.yolo_v3 as yolo
-
-
-# Size of the input image for the detector.
+# Default size of the input image for the detector.
 YOLO_SIZE = 416
 
 # Detection parameters
@@ -41,42 +40,67 @@ IOU_THRESHOLD = 0.4   # IOU above which two boxes are considered the same.
 AD_TYPE = 0
 
 
-def scale_box(box, img_size):
-    """Scale detected box to match image size."""
-    xscale = img_size[0] / YOLO_SIZE
-    yscale = img_size[1] / YOLO_SIZE
-    x0, y0, x1, y1 = map(float, box)
-    return [x0 * xscale, y0 * yscale, x1 * xscale, y1 * yscale]
-
-
 class AdDetector:
     """Ad detector that encapsulates TF session and YOLO v.3 model."""
 
     def __init__(self, weights_file):
-        classes = {AD_TYPE: 'ad'}
+        self.weights_file = weights_file
+        self._detect_params()
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            self._init_yolo()
+
+    def _detect_params(self):
+        """Autodetect model parameters based on the size of the weights file.
+
+        First we detect how many object classes we have based on 61570957 float
+        parameters that are not class-related and 5385 class-related ones. Then
+        we calculate header size as the remaining size of the weights file.
+
+        Note: the approach above is empirically derived from two existing
+        weights files and might be completely wrong.
+
+        """
+        MAIN_WEIGHTS = 61570957
+        CLASS_WEIGHTS = 5385
+        size = os.stat(self.weights_file).st_size
+        words = size // 4
+        self.class_count = (words - MAIN_WEIGHTS) // CLASS_WEIGHTS
+        self.header_size = (words - MAIN_WEIGHTS
+                            - CLASS_WEIGHTS * self.class_count)
+        logging.debug('Detected params: CC: %d HS: %d',
+                      self.class_count, self.header_size)
+        if self.header_size not in {4, 5}:
+            raise Exception('Expected header_size to be 4 or 5, not {}'
+                            .format(self.header_size))
+
+    def _init_yolo(self):
+        """Create YOLO graph and load the weights."""
+        logging.debug('Create TF session')
+        self.tf_session = tf.Session()
+        logging.debug('Building YOLO graph')
         self.inputs = tf.placeholder(tf.float32,
                                      [None, YOLO_SIZE, YOLO_SIZE, 3])
-        logging.info('Initializing TF session')
-        config = tf.ConfigProto()
-        self.tf_session = tf.Session(config=config)
-        logging.info('Booting YOLO and loading weights from %s', weights_file)
-        self.detections, self.boxes = self._init_yolo(
-            self.tf_session, self.inputs, len(classes),
-            weights_file, header_size=4,
-        )
-        logging.info('Done')
-
-
-    def _init_yolo(self, sess, inputs, num_classes, weights, header_size=5):
-        """Initialize the model and load the weights."""
         with tf.variable_scope('detector'):
-            detections = yolo.yolo_v3(inputs, num_classes, data_format='NHWC')
-            load_ops = yolo.load_weights(tf.global_variables(scope='detector'),
-                                         weights, header_size=header_size)
+            detections = yolo.yolo_v3(self.inputs, self.class_count,
+                                      data_format='NHWC')
+            logging.debug('Loading weights from %s', self.weights_file)
+            load_ops = yolo.load_weights(
+                tf.global_variables(scope='detector'),
+                self.weights_file,
+                header_size=self.header_size,
+            )
+        self.boxes = yolo.detections_boxes(detections)
+        logging.debug('Applying weights to the graph')
+        self.tf_session.run(load_ops)
+        logging.debug('Done')
 
-        boxes = yolo.detections_boxes(detections)
-        sess.run(load_ops)
-        return detections, boxes
+    def scale_box(self, box, img_size):
+        """Scale detected box to match image size."""
+        xscale = img_size[0] / YOLO_SIZE
+        yscale = img_size[1] / YOLO_SIZE
+        x0, y0, x1, y1 = map(float, box)
+        return [x0 * xscale, y0 * yscale, x1 * xscale, y1 * yscale]
 
     def detect(self, image):
         """Detect ads in the image, return all detected boxes as a list."""
@@ -96,6 +120,7 @@ class AdDetector:
         )
         logging.debug('Unique boxes: %s', unique_boxes)
         return [
-            scale_box(box, image.size) + [float(p)]
-            for box, p in unique_boxes[AD_TYPE]
+            self.scale_box(box, image.size) + [float(p)]
+            for class_id in range(self.class_count)
+            for box, p in unique_boxes.get(class_id, [])
         ]
