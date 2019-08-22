@@ -22,6 +22,8 @@ With the virtualenv activated the web server can be started with: `adyws`.
 ## Testing
 
 Make sure that `YOLOv3_WEIGHTS_PATH` is set and run the tests with `tox`.
+Currently there's just one test and it expects the weights to be from the
+Ad-versarial repo.
 
 [1]: https://github.com/ftramer/ad-versarial/releases
 [2]: https://github.com/ftramer/ad-versarial/
