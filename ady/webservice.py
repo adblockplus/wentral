@@ -18,6 +18,7 @@
 import json
 import logging
 import os
+import time
 from timeit import default_timer as timer
 
 import flask
@@ -26,7 +27,6 @@ import paste.translogger as tl
 import waitress
 
 from ady.detector import AdDetector
-
 
 app = flask.Flask(__name__)
 
@@ -70,7 +70,7 @@ def detect():
 
 
 def main():
-    logging.basicConfig(level=logging.INFO)
+    logging.getLogger().setLevel(logging.DEBUG)
     weights_file = os.environ['YOLOv3_WEIGHTS_PATH']
     app.detector = AdDetector(weights_file)
     waitress.serve(tl.TransLogger(app, setup_console_handler=False),

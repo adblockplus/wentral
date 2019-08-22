@@ -18,7 +18,14 @@
 import logging
 
 import numpy as np
-import tensorflow as tf
+
+# Importing TensorFlow produces lots of warnings that get in the way and are
+# out of our control so we silence them.
+logging.getLogger().setLevel(logging.ERROR)
+logging.captureWarnings(True)
+import tensorflow
+tf = tensorflow.compat.v1
+logging.captureWarnings(False)
 
 import ady.yolo_v3 as yolo
 
@@ -53,11 +60,23 @@ class AdDetector:
         config = tf.ConfigProto()
         self.tf_session = tf.Session(config=config)
         logging.info('Booting YOLO and loading weights from %s', weights_file)
-        self.detections, self.boxes = yolo.init(
+        self.detections, self.boxes = self._init_yolo(
             self.tf_session, self.inputs, len(classes),
             weights_file, header_size=4,
         )
         logging.info('Done')
+
+
+    def _init_yolo(self, sess, inputs, num_classes, weights, header_size=5):
+        """Initialize the model and load the weights."""
+        with tf.variable_scope('detector'):
+            detections = yolo.yolo_v3(inputs, num_classes, data_format='NHWC')
+            load_ops = yolo.load_weights(tf.global_variables(scope='detector'),
+                                         weights, header_size=header_size)
+
+        boxes = yolo.detections_boxes(detections)
+        sess.run(load_ops)
+        return detections, boxes
 
     def detect(self, image):
         """Detect ads in the image, return all detected boxes as a list."""
@@ -69,11 +88,13 @@ class AdDetector:
             self.boxes,
             feed_dict={self.inputs: [np.array(img, dtype=np.float32)]},
         )
+        logging.debug('Detected boxes: %s', detected_boxes)
         unique_boxes = yolo.non_max_suppression(
             detected_boxes,
             confidence_threshold=CONF_THRESHOLD,
             iou_threshold=IOU_THRESHOLD,
         )
+        logging.debug('Unique boxes: %s', unique_boxes)
         return [
             scale_box(box, image.size) + [float(p)]
             for box, p in unique_boxes[AD_TYPE]
