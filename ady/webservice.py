@@ -24,6 +24,7 @@ from timeit import default_timer as timer
 import flask
 import PIL
 import paste.translogger as tl
+import psutil
 import waitress
 
 from ady.detector import AdDetector
@@ -50,13 +51,14 @@ def detect():
     image_file = flask.request.files['image']
     image = PIL.Image.open(image_file)
 
-    logging.info('Detecting ads')
+    process = psutil.Process(os.getpid())
+    logging.debug('RSS before detection: %d', process.memory_info().rss)
+    logging.debug('Detecting ads')
     t1 = timer()
     boxes = app.detector.detect(image)
     t2 = timer()
-    logging.debug('Detected boxes: {}'.format(boxes))
-    logging.info('Detection complete: found {} ads in {} seconds'
-                 .format(len(boxes), t2 - t1))
+    logging.info('Found {} ads in {} seconds'.format(len(boxes), t2 - t1))
+    logging.debug('RSS after detection: %d', process.memory_info().rss)
 
     response_body = json.dumps({
         'size': image.size,

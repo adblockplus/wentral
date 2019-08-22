@@ -42,6 +42,7 @@ setup(
         'Flask',
         'Paste',
         'waitress',
+        'psutil',
     ],
     license='GPLv3',
     zip_safe=False,
