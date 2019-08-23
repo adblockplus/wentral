@@ -18,7 +18,6 @@
 import json
 import logging
 import os
-import time
 from timeit import default_timer as timer
 
 import flask
