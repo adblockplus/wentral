@@ -30,5 +30,23 @@ Make sure that `YOLOv3_WEIGHTS_PATH` is set and run the tests with `tox`.
 Currently there's just one test and it expects the weights to be from the
 Ad-versarial repo.
 
+## Measuring model performance
+
+There's a script for measuring the peformance (precision, recall) of the model
+that runs in the web service on a set of images with marked regions (any region
+marking that [bimed][3] understands would work) located in `tests/measure.py`.
+It uses `bimed` as a library to load marked regions so you would need to
+install it:
+`pip install git+https://gitlab.com/eyeo/sandbox/bimed@master` should do the
+job.
+
+Make sure you have the server running and a directory with marked images
+prepared, then run the measurement with:
+
+    $ python tests/measure.py -v -u SERVER-URL -o summary.json PATH-TO-IMAGES 
+
+or something along those lines.
+
 [1]: https://github.com/ftramer/ad-versarial/releases
 [2]: https://github.com/ftramer/ad-versarial/
+[3]: https://gitlab.com/eyeo/sandbox/bimed
