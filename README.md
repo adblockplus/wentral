@@ -8,6 +8,11 @@ YOLO v.3 object detection model.
 Install into a virtualenv. After the virtualenv is activated execute
 `python setup.py install`. Dependencies will be installed automatically.
 
+If you would like to have stable dependency versions that are (more or less)
+guaranteed to work, instead of the latests ones, you can run
+`pip install -r requirements.txt` before running the command from previous
+paragraph.
+
 ## Configuration
 
 This repository doesn't contain the weights file for the model. It can be
