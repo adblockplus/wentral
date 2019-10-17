@@ -50,6 +50,10 @@ def parse_args():
         help='Path to YOLOv3 weights file',
     )
     parser.add_argument(
+        '--marked-regions', '-r', metavar='PATH',
+        help='Path to a directory with marked regions',
+    )
+    parser.add_argument(
         '--verbose', '-v',
         action='count', default=0,
         help='Increase the amount of debug output',
@@ -61,7 +65,7 @@ def parse_args():
 
     args = parser.parse_args()
 
-    options = ['--server-url', '--weights-file']
+    options = ['--server-url', '--weights-file', '--marked-regions']
     selected = [
         o for o in options
         if getattr(args, o[2:].replace('-', '_')) is not None
@@ -84,6 +88,8 @@ def main():
     if args.server_url:
         import ady.client as cl
         detector = cl.ProxyAdDetector(args.server_url)
+    elif args.marked_regions:
+        detector = bm.LabeledDataset(args.marked_regions)
     else:  # Must have weights_file.
         import ady.detector as det
         detector = det.YoloAdDetector(args.weights_file)

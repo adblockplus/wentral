@@ -70,6 +70,38 @@ Precision: 50.00%
     assert result.stderr == ''
 
 
+def test_marked_regions(script_runner, dataset_dir):
+    """Test normal operation with --marked-regions."""
+    result = script_runner.run('adybm', '-r', str(dataset_dir),
+                               str(dataset_dir))
+    assert result.success
+    assert result.stdout == """Overall results:
+TP:6 FN:0 FP:0
+Recall: 100.00%
+Precision: 100.00%
+"""
+    assert result.stderr == ''
+
+
+@pytest.fixture()
+def dataset_copy(dataset_dir, tmpdir):
+    """Copy of the dataset (usually so we can modify it)."""
+    dataset_copy = tmpdir.join('dataset_copy')
+    dataset_dir.copy(dataset_copy)
+    return dataset_copy
+
+
+def test_marked_regions_missing(script_runner, dataset_dir, dataset_copy):
+    """Test --marked-regions with some images missing."""
+    dataset_copy.join('1.png').remove()
+    dataset_copy.join('index.csv').write('')
+
+    result = script_runner.run('adybm', '-r', str(dataset_copy),
+                               str(dataset_dir))
+    assert not result.success
+    assert 'Regions information is missing for 1.png' in result.stderr
+
+
 @pytest.mark.script_launch_mode('inprocess')
 def test_json(script_runner, dataset_dir, tmpdir, webservice):
     """Test verbosity levels."""

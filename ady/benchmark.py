@@ -215,6 +215,27 @@ class LabeledDataset:
             ]
             yield PIL.Image.open(image_path), image_path, ad_boxes
 
+    def detect(self, image, image_path):
+        """Return ad detections based on marked regions.
+
+        Raises
+        ------
+        KeyError
+            If there are no regions for specific image in this dataset.
+
+        """
+        image_name = os.path.basename(image_path)
+        try:
+            regions = self.index[image_name]
+        except KeyError:
+            raise Exception('Regions information is missing for {} in {}'
+                            .format(image_name, self.path))
+
+        return [
+            region[:4] for region in regions
+            if region[4] in self.ad_region_types
+        ]
+
 
 def match_detections(dataset, detector, match_iou=0.4):
     """Compare regions detected by detector to the ground truth.

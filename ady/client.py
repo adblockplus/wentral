@@ -24,6 +24,8 @@ class ProxyAdDetector:
     """Ad detector that forwards detection requests to a remote web service."""
 
     def __init__(self, url):
+        if not url.endswith('/'):
+            url += '/'
         self.url = url
 
     def __str__(self):
