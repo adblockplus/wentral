@@ -31,6 +31,7 @@ def ad_detector():
     return det.YoloAdDetector(weights_file)
 
 
+@pytest.mark.weights
 def test_detect(ad_detector):
     img_path = os.path.join(DATA_DIR, 'golemde1.png')
     image = PIL.Image.open(img_path)

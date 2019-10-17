@@ -47,6 +47,7 @@ setup(
         'requests',
         'tensorflow==1.13.2',
         'waitress',
+        'admincer',
     ],
     license='GPLv3',
     zip_safe=False,

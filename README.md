@@ -83,21 +83,11 @@ contain region marking for all images in the latter. Otherwise it's not
 possible to produce detections for the missing images and to avoid giving out
 misguiding results this is considered an error.
 
-Note: the measurement script currently depends on [bimed][3], which is not
-listed as a dependency because it's not published on PyPI. You will need to
-install it manually:
-
-    $ pip install git+https://gitlab.com/eyeo/machine-learning/bimed
-
 ## Testing
 
 Make sure that `YOLOv3_WEIGHTS_PATH` is set and run the tests with `tox`.
 Currently there's just one test and it expects the weights to be from the
 Ad-versarial repo.
 
-Note: because of dependency on [bimed][3] (that is not public yet) the tests
-require a bimed checkout to be located at `../bimed`.
-
 [1]: https://github.com/ftramer/ad-versarial/releases
 [2]: https://github.com/ftramer/ad-versarial/
-[3]: https://gitlab.com/eyeo/sandbox/bimed

@@ -18,7 +18,7 @@
 import logging
 import os
 
-import bimed.index as idx
+import admincer.index as idx
 import PIL
 
 # Add this to a possibly zero-valued denominator to avoid division by zero.
