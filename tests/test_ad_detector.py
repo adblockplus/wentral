@@ -28,12 +28,13 @@ DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
 @pytest.fixture(scope='session')
 def ad_detector():
     weights_file = os.environ['YOLOv3_WEIGHTS_PATH']
-    return det.AdDetector(weights_file)
+    return det.YoloAdDetector(weights_file)
 
 
 def test_detect(ad_detector):
-    image = PIL.Image.open(os.path.join(DATA_DIR, 'golemde1.png'))
-    boxes = ad_detector.detect(image)
+    img_path = os.path.join(DATA_DIR, 'golemde1.png')
+    image = PIL.Image.open(img_path)
+    boxes = ad_detector.detect(image, img_path)
     assert len(boxes) == 2
     assert boxes[0] == pytest.approx([1109.806911761944, 6.440107639019305,
                                       1181.9722982553335, 602.6969322791466,

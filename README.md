@@ -24,28 +24,33 @@ environment variable `YOLOv3_WEIGHTS_PATH` to point to the weights file.
 
 With the virtualenv activated the web server can be started with: `adyws`.
 
+## Running the measurement script
+
+We also provide a script to measure ad detection performance. Invoke the script
+with:
+
+    $ adybm -s https://localhost:8080/ dataset_path
+
+to measure the performance of your local server or with:
+
+    $ adybm -w yolo_v3.weights dataset_path
+
+to load the weights directly. You can also pass it `-o` option to output more
+detailed report to a JSON file and one or two `-v` options to produce more
+debug output.
+
+Note: the measurement script currently depends on [bimed][3], which is not
+listed as a dependency because it's not openly published. You will need to
+install it manually.
+
 ## Testing
 
 Make sure that `YOLOv3_WEIGHTS_PATH` is set and run the tests with `tox`.
 Currently there's just one test and it expects the weights to be from the
 Ad-versarial repo.
 
-## Measuring model performance
-
-There's a script for measuring the peformance (precision, recall) of the model
-that runs in the web service on a set of images with marked regions (any region
-marking that [bimed][3] understands would work) located in `tests/measure.py`.
-It uses `bimed` as a library to load marked regions so you would need to
-install it:
-`pip install git+https://gitlab.com/eyeo/sandbox/bimed@master` should do the
-job.
-
-Make sure you have the server running and a directory with marked images
-prepared, then run the measurement with:
-
-    $ python tests/measure.py -v -u SERVER-URL -o summary.json PATH-TO-IMAGES 
-
-or something along those lines.
+Note: because of dependency on [bimed][3] (that is not public yet) the tests
+require a bimed checkout to be located at `../bimed`.
 
 [1]: https://github.com/ftramer/ad-versarial/releases
 [2]: https://github.com/ftramer/ad-versarial/

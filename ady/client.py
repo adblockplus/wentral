@@ -20,11 +20,23 @@ import io
 import requests
 
 
-def detect_ads(image, server_url):
-    """Upload the image for ad detection and parse the result."""
-    if not (isinstance(type(image), type(b'')) or hasattr(image, 'read')):
-        bio = io.BytesIO()
-        image.save(bio, format='PNG')
-        image = bio.getvalue()
-    request = requests.post(server_url + 'detect', files={'image': image})
-    return request.json()['boxes']
+class ProxyAdDetector:
+    """Ad detector that forwards detection requests to a remote web service."""
+
+    def __init__(self, url):
+        self.url = url
+
+    def __str__(self):
+        return 'ProxyAdDetector({})'.format(self.url)
+
+    def detect(self, image, path):
+        """Upload the image for ad detection and return the response."""
+        if not (isinstance(type(image), type(b'')) or hasattr(image, 'read')):
+            bio = io.BytesIO()
+            image.save(bio, format='PNG')
+            image = bio.getvalue()
+        request = requests.post(
+            self.url + 'detect',
+            files={'image': (path, image)},
+        )
+        return [tuple(box) for box in request.json()['boxes']]
