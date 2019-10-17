@@ -15,50 +15,32 @@
 
 """Test ad detection client and server."""
 
-import PIL
+from PIL import Image
 import pytest
-import wsgi_intercept as icpt
-from wsgi_intercept import requests_intercept
 
 import ady.client as wc
-import ady.webservice as ws
-
-
-class FakeDetector:
-    """Fake ad detector."""
-
-    def detect(self, image):
-        assert image.size == (100, 200)
-        return [(10, 20, 30, 40, 0.9)]
 
 
 @pytest.fixture()
-def webservice():
-    app = ws.app
-    app.detector = FakeDetector()
-    host, port = 'localhost', 8080
-    url = 'http://{0}:{1}/'.format(host, port)
-    requests_intercept.install()
-    icpt.add_wsgi_intercept(host, port, lambda: app)
-    yield {'app': app, 'url': url}
-    icpt.remove_wsgi_intercept()
+def proxy_detector(webservice):
+    return wc.ProxyAdDetector(webservice['url'])
 
 
 @pytest.fixture()
 def screenshot_image():
-    return PIL.Image.new('RGB', (100, 200), '#123456')
+    return Image.new('RGB', (100, 100), '#123456')
 
 
-def test_client_server(webservice, screenshot_image):
+def test_client_server(proxy_detector, screenshot_image):
     """Detect ads in a PIL.Image."""
-    boxes = wc.detect_ads(screenshot_image, webservice['url'])
-    assert boxes == [[10, 20, 30, 40, 0.9]]  # Tuple becomes a list in JSON.
+    boxes = proxy_detector.detect(screenshot_image, 'foo.png')
+    assert boxes == [(10, 20, 30, 40, 0.9)]
 
 
-def test_client_server_file(webservice, screenshot_image, tmpdir):
+def test_client_server_file(proxy_detector, screenshot_image, tmpdir):
     """Detect ads in an open image file."""
     img_path = tmpdir.join('foo.png')
     screenshot_image.save(str(img_path))
     with img_path.open('rb') as im_file:
-        boxes = wc.detect_ads(im_file, webservice['url'])
-    assert boxes == [[10, 20, 30, 40, 0.9]]  # Tuple becomes a list in JSON.
+        boxes = proxy_detector.detect(im_file, 'foo.png')
+    assert boxes == [(10, 20, 30, 40, 0.9)]

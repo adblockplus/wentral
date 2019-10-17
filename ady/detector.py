@@ -40,7 +40,7 @@ IOU_THRESHOLD = 0.4   # IOU above which two boxes are considered the same.
 AD_TYPE = 0
 
 
-class AdDetector:
+class YoloAdDetector:
     """Ad detector that encapsulates TF session and YOLO v.3 model."""
 
     def __init__(self, weights_file):
@@ -49,6 +49,9 @@ class AdDetector:
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             self._init_yolo()
+
+    def __str__(self):
+        return 'YoloAdDetector({})'.format(self.weights_file)
 
     def _detect_params(self):
         """Autodetect model parameters based on the size of the weights file.
@@ -102,7 +105,7 @@ class AdDetector:
         x0, y0, x1, y1 = map(float, box)
         return [x0 * xscale, y0 * yscale, x1 * xscale, y1 * yscale]
 
-    def detect(self, image):
+    def detect(self, image, path):
         """Detect ads in the image, return all detected boxes as a list."""
         img = image.resize((YOLO_SIZE, YOLO_SIZE))
         if img.mode == 'RGBA':

@@ -32,7 +32,10 @@ setup(
     url='https://gitlab.com/eyeo/sandbox/ad-detect-yolo',
     packages=['ady'],
     entry_points={
-        'console_scripts': ['adyws=ady.webservice:main'],
+        'console_scripts': [
+            'adyws=ady.adyws:main',
+            'adybm=ady.adybm:main',
+        ],
     },
     include_package_data=True,
     install_requires=[
@@ -42,7 +45,7 @@ setup(
         'Pillow',
         'psutil',
         'requests',
-        'tensorflow',
+        'tensorflow==1.13.2',
         'waitress',
     ],
     license='GPLv3',
