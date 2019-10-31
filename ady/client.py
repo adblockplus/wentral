@@ -31,8 +31,34 @@ class ProxyAdDetector:
     def __str__(self):
         return 'ProxyAdDetector({})'.format(self.url)
 
-    def detect(self, image, path):
-        """Upload the image for ad detection and return the response."""
+    def detect(self, image, path, confidence_threshold=None,
+               iou_threshold=None):
+        """Upload the image for ad detection and return the response.
+
+        Parameters
+        ----------
+        image : PIL.Image or bytes or file
+            Source image for ad detection.
+        path : str
+            Path to the image (it's not used by this detector but is a part of
+            detector API).
+        confidence_threshold : float
+            Minimal confidence for the detection to be counted.
+        iou_threshold : float
+            Minimal IoU for two detections to be considered duplicated.
+
+        Returns
+        -------
+        detections : list of [x0, y0, x1, y1, confidence]
+            Detected ad boxes.
+
+        """
+        params = {}
+        if confidence_threshold is not None:
+            params['confidence_threshold'] = str(confidence_threshold)
+        if iou_threshold is not None:
+            params['iou_threshold'] = str(iou_threshold)
+
         if not (isinstance(type(image), type(b'')) or hasattr(image, 'read')):
             bio = io.BytesIO()
             image.save(bio, format='PNG')
@@ -40,5 +66,6 @@ class ProxyAdDetector:
         request = requests.post(
             self.url + 'detect',
             files={'image': (path, image)},
+            data=params,
         )
         return [tuple(box) for box in request.json()['boxes']]

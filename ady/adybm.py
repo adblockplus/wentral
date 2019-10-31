@@ -28,10 +28,20 @@ LOGGING_LEVELS = {
     2: logging.DEBUG,
 }
 
+RESULTS_TEMPLATE = """Overall results:
+TP:{0.tp} FN:{0.fn} FP:{0.fp}
+Recall: {0.recall:.2%}
+Precision: {0.precision:.2%}
+mAP: {0.mAP:.2%}"""
+
 
 def parse_args():
     """Parse command line arguments."""
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        '--confidence-threshold', '-c', metavar='X', type=float, default=0.5,
+        help='Minimum confidence for detections to be counted (default: 0.5)',
+    )
     parser.add_argument(
         '--match-iou', '-m', metavar='X', type=float, default=0.4,
         help='Minimum IOU after which the detection is considered correct '
@@ -95,13 +105,11 @@ def main():
         detector = det.YoloAdDetector(args.weights_file)
 
     dataset = bm.LabeledDataset(args.dataset)
-    evaluation = bm.evaluate(dataset, detector, args.match_iou)
+    evaluation = bm.evaluate(dataset, detector, args.confidence_threshold,
+                             args.match_iou)
 
     if not args.output or args.verbose > 0:
-        print('Overall results:')
-        print('TP:{0.tp} FN:{0.fn} FP:{0.fp}'.format(evaluation))
-        print('Recall: {0.recall:.2%}'.format(evaluation))
-        print('Precision: {0.precision:.2%}'.format(evaluation))
+        print(RESULTS_TEMPLATE.format(evaluation))
 
     if args.output:
         with open(args.output, 'wt', encoding='utf-8') as out_file:

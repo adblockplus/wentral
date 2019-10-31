@@ -47,6 +47,7 @@ def test_server_url(script_runner, dataset_dir, webservice):
 TP:4 FN:2 FP:4
 Recall: 66.67%
 Precision: 50.00%
+mAP: 75.00%
 """
     assert result.stderr == ''
 
@@ -66,6 +67,7 @@ def test_weights_file(script_runner, mocker, dataset_dir, mock_detector):
 TP:4 FN:2 FP:4
 Recall: 66.67%
 Precision: 50.00%
+mAP: 75.00%
 """
     assert result.stderr == ''
 
@@ -79,6 +81,7 @@ def test_marked_regions(script_runner, dataset_dir):
 TP:6 FN:0 FP:0
 Recall: 100.00%
 Precision: 100.00%
+mAP: 100.00%
 """
     assert result.stderr == ''
 
@@ -118,6 +121,9 @@ def test_json(script_runner, dataset_dir, tmpdir, webservice):
     result = json.load(json_path.open())
     assert result['tp'] == result['fp'] == 4
     assert result['fn'] == 2
+    assert result['precision'] == pytest.approx(0.5, 0.001)
+    assert result['recall'] == pytest.approx(0.6667, 0.001)
+    assert result['mAP'] == pytest.approx(0.75, 0.001)
 
 
 @pytest.mark.script_launch_mode('inprocess')
@@ -130,5 +136,6 @@ def test_iou(script_runner, dataset_dir, webservice):
 TP:6 FN:0 FP:2
 Recall: 100.00%
 Precision: 75.00%
+mAP: 95.14%
 """
     assert result.stderr == ''

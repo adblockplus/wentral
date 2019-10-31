@@ -30,11 +30,16 @@ class MockAdDetector:
 
     def __init__(self, answers):
         self.answers = answers
+        self.log = []
 
-    def detect(self, image, image_path):
+    def detect(self, image, image_path, **kw):
+        image_name = os.path.basename(image_path)
+        self.log.append({
+            'image_name': image_name,
+            'params': kw,
+        })
         if image_path in self.answers:
             return self.answers[image_path]
-        image_name = os.path.basename(image_path)
         return self.answers.get(image_name, [])
 
 
@@ -43,16 +48,16 @@ def mock_detector():
     return MockAdDetector({
         '0.png': [
             (0, 0, 50, 20, 0.9),    # Precise detection.
-            (82, 12, 94, 45, 0.9),  # Smaller detection.
-            (0, 70, 50, 90, 0.9),   # False positive.
+            (82, 12, 94, 45, 0.8),  # Smaller detection.
+            (0, 70, 50, 90, 0.7),   # False positive.
         ],
         '1.png': [
             (10, 10, 80, 25, 0.9),  # Precise detection.
-            (10, 30, 30, 60, 0.9),  # False positive.
+            (10, 30, 30, 60, 0.6),  # False positive.
         ],
         '2.png': [
-            (5, 5, 15, 15, 0.9),    # Too small: IoU below threshold.
-            (20, 20, 50, 50, 0.9),  # Too big: IoU below threshold.
+            (5, 5, 15, 15, 0.7),    # Too small: IoU below threshold.
+            (20, 20, 50, 50, 0.6),  # Too big: IoU below threshold.
             (60, 60, 90, 90, 0.9),  # Precise detection.
         ],
         'foo.png': [                # For client-server test.

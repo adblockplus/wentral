@@ -31,10 +31,26 @@ def screenshot_image():
     return Image.new('RGB', (100, 100), '#123456')
 
 
-def test_client_server(proxy_detector, screenshot_image):
+def test_client_server(proxy_detector, screenshot_image, webservice):
     """Detect ads in a PIL.Image."""
     boxes = proxy_detector.detect(screenshot_image, 'foo.png')
+    log = webservice['app'].detector.log
     assert boxes == [(10, 20, 30, 40, 0.9)]
+    assert log == [{'image_name': 'foo.png', 'params': {}}]
+
+
+def test_client_server_params(proxy_detector, screenshot_image, webservice):
+    proxy_detector.detect(screenshot_image, '0.png', confidence_threshold=0.7)
+    proxy_detector.detect(screenshot_image, '0.png', iou_threshold=0.6)
+    proxy_detector.detect(screenshot_image, '0.png', confidence_threshold=0.3,
+                          iou_threshold=0.2)
+    log = webservice['app'].detector.log
+    assert log == [
+        {'image_name': '0.png', 'params': {'confidence_threshold': 0.7}},
+        {'image_name': '0.png', 'params': {'iou_threshold': 0.6}},
+        {'image_name': '0.png', 'params': {'confidence_threshold': 0.3,
+                                           'iou_threshold': 0.2}},
+    ]
 
 
 def test_client_server_file(proxy_detector, screenshot_image, tmpdir):

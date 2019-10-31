@@ -15,11 +15,14 @@
 
 """YOLOv3-based ad detector."""
 
+import collections
 import logging
 import os
 import warnings
 
 import numpy as np
+
+import ady.utils as u
 
 # Importing TensorFlow and YOLO produces lots of warnings that get in the way
 # and are out of our control so we silence them.
@@ -33,18 +36,57 @@ with warnings.catch_warnings():
 YOLO_SIZE = 416
 
 # Detection parameters
-CONF_THRESHOLD = 0.5  # Level of confidence that we count as detection.
-IOU_THRESHOLD = 0.4   # IOU above which two boxes are considered the same.
+CONF_THRESHOLD = 0.5     # Level of confidence that we count as detection.
+IOU_THRESHOLD = 0.4      # IOU above which two boxes are considered the same.
 
 # Region type (a.k.a. class) that means "advertisement".
 AD_TYPE = 0
 
 
+def deduplicate(detections, iou_threshold=0.4):
+    """Remove overlapping detections (leave maximal confidence one).
+
+    Parameters
+    ----------
+    detections : np.array(-1, 5 + n_cls)
+        Detected boxes. In the last dimension the values are box coordinates
+        followed by confidence and class probabilities.
+    iou_threshold : float
+        Minimal IoU at which we consider that two boxes are overlapping.
+
+    Returns
+    -------
+    class_map : dict(clss -> [(box, score)])
+        Map of class ids to detections of the class.
+
+    """
+    classes = np.argmax(detections[:, 5:], axis=-1)
+    result = collections.defaultdict(list)
+
+    for cls in set(classes):
+        cls_all = detections[classes == cls]
+        cls_all = cls_all[cls_all[:, 4].argsort()[::-1]]
+        while len(cls_all) > 0:
+            first = cls_all[0]
+            result[cls].append((first[:4], first[4]))
+            cls_all = cls_all[1:]
+            ious = np.array([
+                u.iou(first[:4], x)
+                for x in cls_all[:, :4]
+            ])
+            cls_all = cls_all[ious < iou_threshold]
+
+    return result
+
+
 class YoloAdDetector:
     """Ad detector that encapsulates TF session and YOLO v.3 model."""
 
-    def __init__(self, weights_file):
+    def __init__(self, weights_file, confidence_threshold=CONF_THRESHOLD,
+                 iou_threshold=IOU_THRESHOLD):
         self.weights_file = weights_file
+        self.confidence_threshold = confidence_threshold
+        self.iou_threshold = iou_threshold
         self._detect_params()
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
@@ -105,25 +147,54 @@ class YoloAdDetector:
         x0, y0, x1, y1 = map(float, box)
         return [x0 * xscale, y0 * yscale, x1 * xscale, y1 * yscale]
 
-    def detect(self, image, path):
-        """Detect ads in the image, return all detected boxes as a list."""
+    def _get_detections(self, image):
+        """Run the model and return detections as np.array(-1, 5 + n_cls)."""
+        all_detections = self.tf_session.run(
+            self.boxes,
+            feed_dict={self.inputs: [np.array(image, dtype=np.float32)]},
+        )
+        return all_detections.reshape(-1, all_detections.shape[-1])
+
+    def detect(self, image, path, confidence_threshold=None,
+               iou_threshold=None):
+        """Detect ads in the image, return all detected boxes as a list.
+
+        Parameters
+        ----------
+        image : PIL.Image
+            Source image for ad detection.
+        path : str
+            Path to the image (it's not used by this detector but is a part of
+            detector API).
+        confidence_threshold : float
+            Minimal confidence for the detection to be counted.
+        iou_threshold : float
+            Minimal IoU for two detections to be considered duplicated.
+
+        Returns
+        -------
+        detections : list of [x0, y0, x1, y1, confidence]
+            Detected ad boxes.
+
+        """
+        if confidence_threshold is None:
+            confidence_threshold = self.confidence_threshold
+        if iou_threshold is None:
+            iou_threshold = self.iou_threshold
+
         img = image.resize((YOLO_SIZE, YOLO_SIZE))
         if img.mode == 'RGBA':
             img = img.convert(mode='RGB')
 
-        detected_boxes = self.tf_session.run(
-            self.boxes,
-            feed_dict={self.inputs: [np.array(img, dtype=np.float32)]},
-        )
-        logging.debug('Detected boxes: %s', detected_boxes)
-        unique_boxes = yolo.non_max_suppression(
-            detected_boxes,
-            confidence_threshold=CONF_THRESHOLD,
-            iou_threshold=IOU_THRESHOLD,
-        )
+        detections = self._get_detections(img)
+        # Discard low confidence detections.
+        detections = detections[detections[:, 4] > confidence_threshold]
+        logging.debug('Detected %d boxes: %s', len(detections), detections)
+        unique_boxes = deduplicate(detections, iou_threshold=iou_threshold)
         logging.debug('Unique boxes: %s', unique_boxes)
+
         return [
-            self.scale_box(box, image.size) + [float(p)]
+            tuple(self.scale_box(box, image.size)) + (float(p),)
             for class_id in range(self.class_count)
             for box, p in unique_boxes.get(class_id, [])
         ]

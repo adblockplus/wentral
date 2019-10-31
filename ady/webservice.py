@@ -36,7 +36,18 @@ def make_app(detector):
     <html>
       <body>
         <form action="/detect" method="POST" enctype="multipart/form-data">
-          <input type="file" name="image" />
+          <p>
+            Image<br/>
+            <input type="file" name="image" />
+          </p>
+          <p>
+            Confidence threshold<br/>
+            <input type="text" name="confidence_threshold" value="0.5" />
+          </p>
+          <p>
+            IoU threshold<br/>
+            <input type="text" name="iou_threshold" value="0.4" />
+          </p>
           <input type="submit" value="submit" name="submit" />
         </form>
       </body>
@@ -46,21 +57,31 @@ def make_app(detector):
     @app.route('/detect', methods=['POST'])
     def detect():
         image_file = flask.request.files['image']
+        image_name = image_file.filename
         image = PIL.Image.open(image_file)
 
+        kw = {}
+        for x in ['confidence_threshold', 'iou_threshold']:
+            if x in flask.request.form:
+                try:
+                    kw[x] = float(flask.request.form[x])
+                except ValueError:
+                    flask.abort(400, '{} must be a number'.format(x))
+
         process = psutil.Process(os.getpid())
+        logging.debug('Got request: {} {}'.format(image_name, kw))
         logging.debug('RSS before detection: %d', process.memory_info().rss)
-        logging.debug('Detecting ads')
         t1 = timer()
-        boxes = app.detector.detect(image, image_file.filename)
+        boxes = app.detector.detect(image, image_name, **kw)
         t2 = timer()
         logging.info('Found {} ads in {} seconds'.format(len(boxes), t2 - t1))
         logging.debug('RSS after detection: %d', process.memory_info().rss)
+        det_time = t2 - t1
 
         response_body = json.dumps({
             'size': image.size,
             'boxes': boxes,
-            'detection_time': t2 - t1,
+            'detection_time': det_time,
         })
         response_headers = {
             'Content-type': 'application/json',
