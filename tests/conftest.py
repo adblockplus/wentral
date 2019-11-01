@@ -16,6 +16,7 @@
 """Common testing bits."""
 
 import os
+import time
 
 from PIL import Image
 import pytest
@@ -31,6 +32,7 @@ class MockAdDetector:
     def __init__(self, answers):
         self.answers = answers
         self.log = []
+        self.delay = 0
 
     def detect(self, image, image_path, **kw):
         image_name = os.path.basename(image_path)
@@ -38,9 +40,14 @@ class MockAdDetector:
             'image_name': image_name,
             'params': kw,
         })
+        if self.delay > 0:
+            time.sleep(self.delay)
         if image_path in self.answers:
             return self.answers[image_path]
         return self.answers.get(image_name, [])
+
+    def __str__(self):
+        return 'mock-detector'
 
 
 @pytest.fixture()

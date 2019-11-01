@@ -38,7 +38,12 @@ Client code for Python is provided in `ady.client`:
 
 When using other languages upload the image to `http://localhost:8080/detect`
 using a POST request with Content-Type `multipart/form-data`. The field name
-should be called `image`.
+should be called `image`. The result is returned as a JSON document.
+
+There's also a GET endpoint for requesting server status at
+`http://localhost:8080/status`. It returns a JSON document that contains the
+information about server memory consumption and current active detection
+requests.
 
 ## Running the measurement script
 

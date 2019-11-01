@@ -15,8 +15,12 @@
 
 """Test ad detection client and server."""
 
+import threading
+import time
+
 from PIL import Image
 import pytest
+import requests
 
 import ady.client as wc
 
@@ -24,6 +28,14 @@ import ady.client as wc
 @pytest.fixture()
 def proxy_detector(webservice):
     return wc.ProxyAdDetector(webservice['url'])
+
+
+@pytest.fixture()
+def get_server_status(webservice):
+    def get_server_status():
+        request = requests.get(webservice['url'] + '/status')
+        return request.json()
+    return get_server_status
 
 
 @pytest.fixture()
@@ -60,3 +72,36 @@ def test_client_server_file(proxy_detector, screenshot_image, tmpdir):
     with img_path.open('rb') as im_file:
         boxes = proxy_detector.detect(im_file, 'foo.png')
     assert boxes == [(10, 20, 30, 40, 0.9)]
+
+
+def test_server_status(get_server_status):
+    """Test server status with no requests."""
+    status = get_server_status()
+    assert status['requests'] == []
+    assert status['detector'] == 'mock-detector'
+    assert status['mem_rss'] > 1000
+
+
+def test_server_status_req(mock_detector, get_server_status, proxy_detector,
+                           screenshot_image):
+    """Test server status while sending requests."""
+    mock_detector.delay = 0.1
+    for i in range(3):
+        threading.Thread(
+            target=proxy_detector.detect,
+            args=(screenshot_image, '{}.png'.format(i)),
+            kwargs={'confidence_threshold': 0.5},
+            daemon=True,
+        ).start()
+    time.sleep(0.05)
+    status = get_server_status()
+    reqs = status['requests']
+    assert len(reqs) == 3
+    assert set(r['image_name'] for r in reqs) == {'0.png', '1.png', '2.png'}
+    assert set(r['id'] for r in reqs) == {0, 1, 2}
+    for r in reqs:
+        assert r['state'] == 'ad-detect'
+        assert r['params'] == {'confidence_threshold': 0.5}
+        assert r['start_t'] is not None
+        assert r['detect_t'] is not None
+        assert r['end_t'] is None
