@@ -22,6 +22,7 @@ import paste.translogger as tl
 import waitress
 
 import ady.detector as det
+import ady.slicing_detector_proxy as sdp
 import ady.webservice as ws
 
 
@@ -29,7 +30,8 @@ def make_app():
     """Prepare the ad detection web service."""
     weights_file = os.environ['YOLOv3_WEIGHTS_PATH']
     detector = det.YoloAdDetector(weights_file)
-    app = ws.make_app(detector)
+    slicing_proxy = sdp.SlicingDetectorProxy(detector)
+    app = ws.make_app(slicing_proxy)
     return tl.TransLogger(app, setup_console_handler=False)
 
 

@@ -23,7 +23,7 @@ with open(README_PATH) as f:
 
 setup(
     name='ad-detect-yolo',
-    version='0.0.1',
+    version='0.1.0',
     description='Detect ads in screenshots using YOLO v.3',
     long_description=long_description,
     long_description_content_type='text/markdown',

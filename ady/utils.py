@@ -19,23 +19,50 @@
 EPSILON = 1e-7
 
 
-def iou(box1, box2):
-    """Calculate intersection over union of two boxes."""
+def area(box):
+    """Calculate area of a box."""
+    if box is None:
+        return 0
+    x0, y0, x1, y1 = box
+    return (x1 - x0) * (y1 - y0)
 
+
+def intersect(box1, box2):
+    """Calculate the intersection of two boxes."""
     b1_x0, b1_y0, b1_x1, b1_y1 = box1
     b2_x0, b2_y0, b2_x1, b2_y1 = box2
 
-    int_x0 = max(b1_x0, b2_x0)
-    int_y0 = max(b1_y0, b2_y0)
-    int_x1 = min(b1_x1, b2_x1)
-    int_y1 = min(b1_y1, b2_y1)
+    x0 = max(b1_x0, b2_x0)
+    y0 = max(b1_y0, b2_y0)
+    x1 = min(b1_x1, b2_x1)
+    y1 = min(b1_y1, b2_y1)
 
-    if int_x0 > int_x1 or int_y0 > int_y1:  # No intersection.
-        return 0
+    if x0 > x1 or y0 > y1:  # No intersection, return None
+        return None
 
-    int_area = (int_x1 - int_x0) * (int_y1 - int_y0)
+    return (x0, y0, x1, y1)
 
-    b1_area = (b1_x1 - b1_x0) * (b1_y1 - b1_y0)
-    b2_area = (b2_x1 - b2_x0) * (b2_y1 - b2_y0)
 
-    return int_area / (b1_area + b2_area - int_area + EPSILON)
+def bounding_box(*boxes):
+    """Compute a bounding box around other boxes."""
+    x0, y0, x1, y1 = boxes[0]
+
+    for bx0, by0, bx1, by1 in boxes[1:]:
+        x0 = min(x0, bx0)
+        y0 = min(y0, by0)
+        x1 = max(x1, bx1)
+        y1 = max(y1, by1)
+
+    return x0, y0, x1, y1
+
+
+def iou(box1, box2):
+    """Calculate intersection over union of two boxes."""
+    int_area = area(intersect(box1, box2))
+    return int_area / (area(box1) + area(box2) - int_area + EPSILON)
+
+
+def xy_swap(box):
+    """Swap x and y coordinates in a box."""
+    x0, y0, x1, y1 = box[:4]
+    return (y0, x0, y1, x1) + box[4:]

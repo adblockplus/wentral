@@ -40,10 +40,24 @@ When using other languages upload the image to `http://localhost:8080/detect`
 using a POST request with Content-Type `multipart/form-data`. The field name
 should be called `image`. The result is returned as a JSON document.
 
+The requests to `detect` endpoint can also include additional parameters for
+the detection process:
+
+- `confidence_threshold` - minimum model confidence for detections to be
+  returned (default: 0.5).
+- `iou_threshold` - IOU above which two detections are considered duplicate and
+  only the highest confidence one will be returned (default: 0.4).
+- `slicing_threshold` - aspect ratio (short side over long side) below which
+  the image will be cut into square slices as the model doesn't deal well with
+  very non-square images (default: 0.7).
+- `slice_overlap` - minimal ratio of the slice area that will be overlapped:
+  overlaps are necessary to make sure the ads at slice boundaries get detected
+  (default: 0.2).
+
 There's also a GET endpoint for requesting server status at
 `http://localhost:8080/status`. It returns a JSON document that contains the
 information about server memory consumption and current active detection
-requests.
+requests (including their parameters).
 
 ## Running the measurement script
 

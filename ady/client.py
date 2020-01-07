@@ -31,8 +31,7 @@ class ProxyAdDetector:
     def __str__(self):
         return 'ProxyAdDetector({})'.format(self.url)
 
-    def detect(self, image, path, confidence_threshold=None,
-               iou_threshold=None):
+    def detect(self, image, path, **params):
         """Upload the image for ad detection and return the response.
 
         Parameters
@@ -42,10 +41,9 @@ class ProxyAdDetector:
         path : str
             Path to the image (it's not used by this detector but is a part of
             detector API).
-        confidence_threshold : float
-            Minimal confidence for the detection to be counted.
-        iou_threshold : float
-            Minimal IoU for two detections to be considered duplicated.
+        params : dict
+            The rest of the parameters will be passed to the remote server
+            without changes.
 
         Returns
         -------
@@ -53,12 +51,6 @@ class ProxyAdDetector:
             Detected ad boxes.
 
         """
-        params = {}
-        if confidence_threshold is not None:
-            params['confidence_threshold'] = str(confidence_threshold)
-        if iou_threshold is not None:
-            params['iou_threshold'] = str(iou_threshold)
-
         if not (isinstance(type(image), type(b'')) or hasattr(image, 'read')):
             bio = io.BytesIO()
             image.save(bio, format='PNG')
