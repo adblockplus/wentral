@@ -129,8 +129,12 @@ def test_json(script_runner, dataset_dir, tmpdir, webservice):
 @pytest.mark.script_launch_mode('inprocess')
 def test_iou(script_runner, dataset_dir, webservice):
     """Test changing the IoU."""
-    result = script_runner.run('adybm', '-s', webservice['url'], '-m', '0.1',
-                               str(dataset_dir))
+    result = script_runner.run(
+        'adybm',
+        '-s', webservice['url'],
+        '-m', '0.1',
+        str(dataset_dir),
+    )
     assert result.success
     assert result.stdout == """Overall results:
 TP:6 FN:0 FP:2
@@ -139,3 +143,27 @@ Precision: 75.00%
 mAP: 95.14%
 """
     assert result.stderr == ''
+
+
+@pytest.mark.script_launch_mode('inprocess')
+def test_visualize_out_files(script_runner, dataset_dir, tmpdir, webservice):
+    """Test vizualizing the detection boxes."""
+    expect_vis = {
+        i.basename for i in dataset_dir.listdir()
+        if i.ext == '.png'
+    }
+    vis_dir = tmpdir.join('vis_dir')
+
+    result = script_runner.run(
+        'adybm',
+        '-s', webservice['url'],
+        '-z', str(vis_dir),
+        str(dataset_dir),
+    )
+
+    assert result.success
+    assert vis_dir.check(dir=1)
+    assert {i.basename for i in vis_dir.listdir()} == expect_vis
+
+    # We don't check that the boxes are drawn correctly and rely on the unit
+    # test in test_visualization.py to ensure that.

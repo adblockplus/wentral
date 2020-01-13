@@ -52,6 +52,10 @@ def parse_args():
         help='Output file for the summary in JSON format',
     )
     parser.add_argument(
+        '--visualizations-path', '-z', metavar='PATH',
+        help='Save detection vizualizations in this directory',
+    )
+    parser.add_argument(
         '--server-url', '-s', metavar='URL',
         help='URL of ad detection service',
     )
@@ -104,9 +108,16 @@ def main():
         import ady.detector as det
         detector = det.YoloAdDetector(args.weights_file)
 
+    params = {
+        'confidence_threshold': args.confidence_threshold,
+        'match_iou': args.match_iou,
+    }
+
+    if args.visualizations_path:
+        params['visualizations_path'] = args.visualizations_path
+
     dataset = bm.LabeledDataset(args.dataset)
-    evaluation = bm.evaluate(dataset, detector, args.confidence_threshold,
-                             args.match_iou)
+    evaluation = bm.evaluate(dataset, detector, **params)
 
     if not args.output or args.verbose > 0:
         print(RESULTS_TEMPLATE.format(evaluation))

@@ -102,6 +102,22 @@ contain region marking for all images in the latter. Otherwise it's not
 possible to produce detections for the missing images and to avoid giving out
 misguiding results this is considered an error.
 
+### Visualizing model performance
+
+You can produce visualizations with detection boxes and ground truth displayed
+on top of the original images. Use `--visualizations-path` (`-z`) option
+followed by the output directory for the visualizations.
+
+The colors of the displayed boxes will be as follows:
+
+- Detection matching a ground truth box (true positive): green,
+- Detection not matching a ground truth box (false positive): orange,
+- Ground truth box matching a detection (also true positive): blue,
+- Ground truth box not matching a detection (false negative): red.
+
+All detections also have their corresponding confidence displayed on top of
+them in %.
+
 ## Testing
 
 Make sure that `YOLOv3_WEIGHTS_PATH` is set and run the tests with `tox`.

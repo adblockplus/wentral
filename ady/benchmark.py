@@ -22,6 +22,7 @@ import admincer.index as idx
 import PIL
 
 import ady.utils as u
+import ady.visualization as vis
 
 
 def _precision(tp, fp):
@@ -69,8 +70,7 @@ class MatchSet:
 
     """
 
-    def __init__(self, image_name, detections, ground_truth,
-                 confidence_threshold, match_iou):
+    def __init__(self, image_name, detections, ground_truth, **params):
         """Construct the match set from detected and expected boxes.
 
         Parameters
@@ -81,20 +81,17 @@ class MatchSet:
             Detected boxes.
         ground_truth : list of tuple (x0, y0, x1, y1)
             Expected boxes.
-        confidence_threshold : float
-            Minimum confidence for detections to be counted (for calculating
-            tp, tn, fp, recall and precision).
-        match_iou : float
-            Minimum IoU (intersection over union) where the boxes are
-            considered to be matching.
+        params : dict
+            Parameters for the match calculations, such as confidence_threshold
+            and match_iou.
 
         """
         self.image_name = image_name
         # Sort detections by confidence (from high to low).
         self.detections = sorted(detections, key=lambda d: d[4], reverse=True)
         self.ground_truth = ground_truth
-        self.confidence_threshold = confidence_threshold
-        self.match_iou = match_iou
+        self.confidence_threshold = params['confidence_threshold']
+        self.match_iou = params['match_iou']
 
         self._mark_true_false()
         self._calculate_metrics()
@@ -127,14 +124,35 @@ class MatchSet:
             if len(self.detections[j]) != 6:  # Wasn't matched: false positive.
                 self.detections[j] += (False,)
 
+    @property
+    def _detected_ground_truth(self):
+        """The list of ground truth boxes that have been detected."""
+        return [box for box in self.ground_truth
+                if box[4] >= self.confidence_threshold]
+
+    @property
+    def _missed_ground_truth(self):
+        """The list of ground truth boxes that have not been detected."""
+        return [box for box in self.ground_truth
+                if box[4] < self.confidence_threshold]
+
+    @property
+    def _true_detections(self):
+        """The list of detections that matched some ground truth boxes."""
+        return [det for det in self.detections
+                if det[4] >= self.confidence_threshold and det[5]]
+
+    @property
+    def _false_detections(self):
+        """The list of detections that don't match any ground truth boxes."""
+        return [det for det in self.detections
+                if det[4] >= self.confidence_threshold and not det[5]]
+
     def _calculate_metrics(self):
         """Calculate metrics: tp, fn, fp, recall and precision."""
-        self.tp = len([box for box in self.ground_truth
-                       if box[4] >= self.confidence_threshold])
-        self.fn = len([box for box in self.ground_truth
-                       if box[4] < self.confidence_threshold])
-        self.fp = len([det for det in self.detections
-                       if det[4] >= self.confidence_threshold and not det[5]])
+        self.tp = len(self._detected_ground_truth)
+        self.fn = len(self._missed_ground_truth)
+        self.fp = len(self._false_detections)
 
         self.recall = _recall(self.tp, self.fn)
         self.precision = _precision(self.tp, self.fp)
@@ -399,8 +417,7 @@ class LabeledDataset:
         ]
 
 
-def match_detections(dataset, detector, confidence_threshold=0.5,
-                     match_iou=0.4):
+def match_detections(dataset, detector, **params):
     """Compare regions detected by detector to the ground truth.
 
     Parameters
@@ -410,11 +427,9 @@ def match_detections(dataset, detector, confidence_threshold=0.5,
     detector : AdDetector (has .detect(image, path) -> list of detections)
         Ad detector to benchmark (returns a list of 5-element tuples with
         box coordinates followed by confidence).
-    confidence_threshold : float
-        Minimum confidence for detections to be counted.
-    match_iou : float
-        Minimum IoU (intersection over union) where the boxes are considered to
-        be matching.
+    params : dict
+        Parameters for the detector, such as confidence_threshold and
+        match_iou.
 
     Returns
     -------
@@ -422,6 +437,9 @@ def match_detections(dataset, detector, confidence_threshold=0.5,
         Results of benchmarking.
 
     """
+    params.setdefault('confidence_threshold', 0.5)
+    params.setdefault('match_iou', 0.4)
+
     for image, image_path, expected_boxes in dataset:
         logging.info('Processing image: {}'.format(image_path))
         logging.debug('Marked ads: {}'.format(expected_boxes))
@@ -429,11 +447,18 @@ def match_detections(dataset, detector, confidence_threshold=0.5,
                                          confidence_threshold=0.001)
         logging.debug('Detected ads: {}'.format(detected_boxes))
         image_name = os.path.basename(image_path)
-        yield MatchSet(image_name, detected_boxes, expected_boxes,
-                       confidence_threshold, match_iou)
+        ms = MatchSet(image_name, detected_boxes, expected_boxes, **params)
+
+        if 'visualizations_path' in params:
+            visualization = vis.visualize_match_set(ms, image)
+            image_name = os.path.basename(image_path)
+            vis_path = os.path.join(params['visualizations_path'], image_name)
+            visualization.save(vis_path)
+
+        yield ms
 
 
-def evaluate(dataset, detector, confidence_threshold=0.5, match_iou=0.4):
+def evaluate(dataset, detector, **params):
     """Evaluate the performance of detector on dataset.
 
     Parameters
@@ -442,11 +467,9 @@ def evaluate(dataset, detector, confidence_threshold=0.5, match_iou=0.4):
         Source of images and true ad detections.
     detector : AdDetector (has .detect(image, path) -> boxes)
         Ad detector to benchmark.
-    confidence_threshold : float
-        Minimum confidence for a detection to count.
-    match_iou : float
-        Minimum IoU (intersection over union) where the boxes are considered to
-        be matching.
+    params : dict
+        Parameters for the detector, such as confidence_threshold and
+        match_iou.
 
     Returns
     -------
@@ -454,6 +477,7 @@ def evaluate(dataset, detector, confidence_threshold=0.5, match_iou=0.4):
         Evaluation result.
 
     """
-    matchsets = list(match_detections(dataset, detector, confidence_threshold,
-                                      match_iou))
+    if 'visualizations_path' in params:
+        os.makedirs(params['visualizations_path'], exist_ok=True)
+    matchsets = list(match_detections(dataset, detector, **params))
     return Evaluation(dataset, detector, matchsets)
