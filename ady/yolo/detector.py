@@ -25,14 +25,6 @@ import numpy as np
 import ady.ad_detector as ad
 import ady.utils as u
 
-# Importing TensorFlow and YOLO produces lots of warnings that get in the way
-# and are out of our control so we silence them.
-with warnings.catch_warnings():
-    warnings.simplefilter("ignore")
-    import tensorflow
-    import ady.yolo.yolo_v3 as yolo
-    tf = tensorflow.compat.v1
-
 # Default size of the input image for the detector.
 YOLO_SIZE = 416
 
@@ -121,6 +113,15 @@ class YoloAdDetector(ad.AdDetector):
 
     def _init_yolo(self):
         """Create YOLO graph and load the weights."""
+        logging.debug('Import TF and YOLO model')
+        # Importing TensorFlow and YOLO produces lots of warnings that get in
+        # the way and are out of our control so we silence them.
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            import tensorflow
+            import ady.yolo.yolo_v3 as yolo
+            tf = tensorflow.compat.v1
+
         logging.debug('Create TF session')
         self.tf_session = tf.Session()
         logging.debug('Building YOLO graph')

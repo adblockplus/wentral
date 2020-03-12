@@ -29,6 +29,8 @@ import ady.webservice as ws
 class MockAdDetector:
     """Ad detector that returns prepared answers."""
 
+    name = 'mock-detector'
+
     def __init__(self, answers):
         self.answers = answers
         self.log = []
@@ -47,7 +49,7 @@ class MockAdDetector:
         return self.answers.get(image_name, [])
 
     def __str__(self):
-        return 'mock-detector'
+        return self.name
 
 
 @pytest.fixture()
@@ -75,6 +77,7 @@ def mock_detector():
 
 @pytest.fixture()
 def webservice(mock_detector):
+    """Mock ad detection web service."""
     app = ws.make_app(mock_detector)
     host, port = 'localhost', 8080
     url = 'http://{0}:{1}/'.format(host, port)
@@ -82,6 +85,22 @@ def webservice(mock_detector):
     icpt.add_wsgi_intercept(host, port, lambda: app)
     yield {'app': app, 'url': url}
     icpt.remove_wsgi_intercept()
+
+
+@pytest.fixture()
+def shmetector(mocker, mock_detector):
+    """Mock detector that can be imported into adybm and adyws with -d."""
+    fqn = 'ady.Shmetector'
+
+    def construct_detector(weights_file, iou_threshold=0.5, missing=None):
+        """Mock of detector constructor. Note: it requires `weights_file`."""
+        assert weights_file == '/a/b/c'
+        mock_detector.name = ('MD(weights_file={}, iou_threshold={})'
+                              .format(weights_file, iou_threshold))
+        return mock_detector
+
+    mocker.patch(fqn, construct_detector, create=True)
+    return fqn
 
 
 @pytest.fixture()

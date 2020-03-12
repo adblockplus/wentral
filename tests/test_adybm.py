@@ -41,19 +41,11 @@ mAP: 75.00%
 
 @pytest.mark.script_launch_mode('inprocess')
 @pytest.mark.parametrize('weights_file', [None, '/a/b/c'])
-def test_other(script_runner, mocker, dataset_dir, mock_detector,
-               weights_file):
+def test_other(script_runner, shmetector, dataset_dir, weights_file):
     """Test with -d ady.Shmetector (that requires weights_file)."""
-
-    def construct_detector(weights_file, iou_threshold=0.5, missing=None):
-        """Mock of detector constructor. Note: it requires `weights_file`."""
-        assert weights_file == '/a/b/c'
-        return mock_detector
-
-    mocker.patch('ady.Shmetector', construct_detector, create=True)
     cmd = [
         'adybm',
-        '-d', 'ady.Shmetector',
+        '-d', shmetector,
         str(dataset_dir),
     ]
     if weights_file is not None:

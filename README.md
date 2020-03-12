@@ -17,14 +17,22 @@ paragraph.
 
 This repository doesn't contain the weights file for the model. It can be
 obtained from [releases page][1] of Ad-Versarial [repository][2] (download
-`models.tar.gz` and take `page_based_yolov3.weights` from it. Set the
-environment variable `YOLOv3_WEIGHTS_PATH` to point to the weights file.
+`models.tar.gz` and take `page_based_yolov3.weights` from it. You can also
+train from scratch and save your own weights (recommended).
 
 ## Running the web service
 
-With the virtualenv activated the web server can be started with: `adyws`. It
-will listen on port 8080, and you can interact with it by pointing your browser
-to `http://localhost:8080/` or programmatically.
+With the virtualenv activated the web server can be started with:
+
+    $ adyws -w weights_file [--port port]
+
+It will listen on specified port (8080 by default), and you can interact with
+it by pointing your browser to `http://localhost:8080/` or programmatically.
+See `adyws -h` for description of additional options.
+
+Instead of providing `-w` option, you can set `YOLOv3_WEIGHTS_PATH` environment
+variable to the path of the weights file. **This is supported for backward
+compatibility but is deprecated and at some point `-w` will become mandatory**.
 
 Client code for Python is provided in `ady.client`:
 
@@ -54,10 +62,21 @@ the detection process:
   overlaps are necessary to make sure the ads at slice boundaries get detected
   (default: 0.2).
 
+The defaults can be changed by supplying the options to `adyws` (see `adyws -h`
+for more info).
+
 There's also a GET endpoint for requesting server status at
 `http://localhost:8080/status`. It returns a JSON document that contains the
 information about server memory consumption and current active detection
 requests (including their parameters).
+
+### Using alternative ad detectors with `adyws`
+
+Supply `--detector`/`-d` parameter with a fully qualified name of another
+detector implementation (e.g. `some.other.AdDetector`) and provide
+`--weights-file`/`-w` option, e.g.:
+
+    $ adyws -d my.other.FancyAdDetector -w fancy.weights
 
 ## Running the measurement script
 

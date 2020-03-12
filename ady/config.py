@@ -16,7 +16,9 @@
 """Common configuration and detector loading."""
 
 import importlib
-import inspect
+import logging
+
+import ady.utils as utils
 
 DETECTOR_SHORTCUTS = {
     'yolo': 'ady.yolo.detector.YoloAdDetector',
@@ -25,6 +27,13 @@ DETECTOR_SHORTCUTS = {
 }
 
 DEFAULT_DETECTOR = 'yolo'
+
+# Logging levels set by zero, one or two -v flags.
+LOGLEVELS = {
+    0: logging.WARNING,
+    1: logging.INFO,
+    2: logging.DEBUG,
+}
 
 
 def add_detector_args(parser):
@@ -55,7 +64,8 @@ def add_detector_args(parser):
     )
     parser.add_argument(
         '--weights-file', '-w', metavar='PATH',
-        help='Path to model weights file (use with -d yolo and other ML)',
+        help='Path to model weights file (use with -d yolo and other neural '
+             'networks)',
     )
     parser.add_argument(
         '--path', '-p', metavar='PATH',
@@ -89,14 +99,5 @@ def make_detector(args):
 
     """
     detector_class = load_detector_class(args.detector)
-    signature = inspect.signature(detector_class)
-
-    params = {}
-    for k, v in signature.parameters.items():
-        if getattr(args, k, None) is not None:
-            params[k] = getattr(args, k)
-        elif v.default == v.empty:
-            raise Exception('Parameter {} is required for detector {}'
-                            .format(k, args.detector))
-
-    return detector_class(**params)
+    kw = utils.kwargs_from_ns(detector_class, args)
+    return detector_class(**kw)
