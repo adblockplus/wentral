@@ -1,5 +1,5 @@
 # This file is part of Ad Detect YOLO <https://adblockplus.org/>,
-# Copyright (C) 2019 eyeo GmbH
+# Copyright (C) 2019-present eyeo GmbH
 #
 # Ad Detect YOLO is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3 as
@@ -20,6 +20,7 @@ import json
 import logging
 
 import ady.benchmark as bm
+import ady.config as conf
 
 # Logging levels set by zero, one or two -v flags.
 LOGGING_LEVELS = {
@@ -36,12 +37,10 @@ mAP: {0.mAP:.2%}"""
 
 
 def parse_args():
-    """Parse command line arguments."""
+    """Parse command line arguments (and configure the logging)."""
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        '--confidence-threshold', '-c', metavar='X', type=float, default=0.5,
-        help='Minimum confidence for detections to be counted (default: 0.5)',
-    )
+    conf.add_detector_args(parser)
+
     parser.add_argument(
         '--match-iou', '-m', metavar='X', type=float, default=0.4,
         help='Minimum IOU after which the detection is considered correct '
@@ -56,20 +55,7 @@ def parse_args():
         help='Save detection vizualizations in this directory',
     )
     parser.add_argument(
-        '--server-url', '-s', metavar='URL',
-        help='URL of ad detection service',
-    )
-    parser.add_argument(
-        '--weights-file', '-w', metavar='PATH',
-        help='Path to YOLOv3 weights file',
-    )
-    parser.add_argument(
-        '--marked-regions', '-r', metavar='PATH',
-        help='Path to a directory with marked regions',
-    )
-    parser.add_argument(
-        '--verbose', '-v',
-        action='count', default=0,
+        '--verbose', '-v', action='count', default=0,
         help='Increase the amount of debug output',
     )
     parser.add_argument(
@@ -78,35 +64,13 @@ def parse_args():
     )
 
     args = parser.parse_args()
-
-    options = ['--server-url', '--weights-file', '--marked-regions']
-    selected = [
-        o for o in options
-        if getattr(args, o[2:].replace('-', '_')) is not None
-    ]
-
-    if selected == []:
-        parser.error('At least one of {} should be present'
-                     .format(', '.join(options)))
-    elif len(selected) > 1:
-        parser.error('{} conflicts with {}'
-                     .format(selected[0], ', '.join(selected[1:])))
-
     return args
 
 
 def main():
     args = parse_args()
     logging.basicConfig(level=LOGGING_LEVELS.get(args.verbose, logging.DEBUG))
-
-    if args.server_url:
-        import ady.client as cl
-        detector = cl.ProxyAdDetector(args.server_url)
-    elif args.marked_regions:
-        detector = bm.LabeledDataset(args.marked_regions)
-    else:  # Must have weights_file.
-        import ady.detector as det
-        detector = det.YoloAdDetector(args.weights_file)
+    detector = conf.make_detector(args)
 
     params = {
         'confidence_threshold': args.confidence_threshold,

@@ -74,27 +74,36 @@ JSON output via `--output` or `-o`.
 
 ### Usage with a web service
 
-Provide `--server-url` or `-s` option:
+Set `--detector` to `server` and provide `--server-url` option:
 
-    $ adybm -s http://localhost:8080/ dataset_path
+    $ adybm -d server -s http://localhost:8080/ dataset_path
 
 This will upload image to `localhost:8080` expecting replies in the same format
 as what `adyws` returns.
 
-### Usage with a weights file
+### Usage with YOLO or other object detection model and weights file
 
-Provide `--weights-file` or `-w` option:
+Set `--detector` to `yolo` or fully qualified name of another detector
+implementation (e.g. `some.other.AdDetector`) and provide `--weights-file`
+option:
 
-    $ adybm -w yolo_v3.weights dataset_path
+    $ adybm -d yolo -w yolo_v3.weights dataset_path
 
 This will load model weights from `yolo_v3.weights` and then use the resulting
 model.
 
-### Usage with another dataset
+    $ adybm -d some.other.AdDetector -w other.weights dataset_path
 
-Provide `--marked-regions` or `-r` option:
+This will import `AdDetector` from `some.other` module and instantiate it with
+`weights_file="other.weights"` (the values of `--confidence-threshold` and
+`--iou-threshold`) will also be passed to the constructor if it takes such
+arguments.
 
-    $ adybm -r another_dataset dataset_path
+### Usage with marked regions from another dataset
+
+Set `--detector` to `static` and provide `--path` option:
+
+    $ adybm -d static -p another_dataset dataset_path
 
 This will take marked regions of `another_dataset` as detections and measure
 this against `dataset_path` as the ground truth. It's important that the former

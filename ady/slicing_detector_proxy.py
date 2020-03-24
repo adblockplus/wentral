@@ -1,5 +1,5 @@
 # This file is part of Ad Detect YOLO <https://adblockplus.org/>,
-# Copyright (C) 2019 eyeo GmbH
+# Copyright (C) 2019-present eyeo GmbH
 #
 # Ad Detect YOLO is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3 as
@@ -22,6 +22,7 @@ and then combines them.
 import functools
 import math
 
+import ady.ad_detector as ad
 import ady.utils as utils
 
 
@@ -39,7 +40,7 @@ def _to_absolute(detection, box):
     return x0 + bx0, y0 + by0, x1 + bx0, y1 + by0, p
 
 
-class SlicingDetectorProxy:
+class SlicingDetectorProxy(ad.AdDetector):
     """Detects ads in full page screenshots (that are tall).
 
     If the input image aspect ratio (short side over long size) is less than
@@ -68,10 +69,12 @@ class SlicingDetectorProxy:
             Percentage of overlap between adjacent slices.
 
         """
-        self.detector = detector
-        self.iou_threshold = iou_threshold
-        self.slicing_threshold = slicing_threshold
-        self.slice_overlap = slice_overlap
+        super().__init__(
+            detector=detector,
+            iou_threshold=iou_threshold,
+            slicing_threshold=slicing_threshold,
+            slice_overlap=slice_overlap,
+        )
 
     @classmethod
     def _slice_boxes(cls, image_size, slicing_threshold, slice_overlap):

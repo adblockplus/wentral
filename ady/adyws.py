@@ -1,5 +1,5 @@
 # This file is part of Ad Detect YOLO <https://adblockplus.org/>,
-# Copyright (C) 2019 eyeo GmbH
+# Copyright (C) 2019-present eyeo GmbH
 #
 # Ad Detect YOLO is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3 as
@@ -21,7 +21,7 @@ import os
 import paste.translogger as tl
 import waitress
 
-import ady.detector as det
+import ady.yolo.detector as det
 import ady.slicing_detector_proxy as sdp
 import ady.webservice as ws
 

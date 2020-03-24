@@ -22,6 +22,7 @@ import warnings
 
 import numpy as np
 
+import ady.ad_detector as ad
 import ady.utils as u
 
 # Importing TensorFlow and YOLO produces lots of warnings that get in the way
@@ -29,7 +30,7 @@ import ady.utils as u
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     import tensorflow
-    import ady.yolo_v3 as yolo
+    import ady.yolo.yolo_v3 as yolo
     tf = tensorflow.compat.v1
 
 # Default size of the input image for the detector.
@@ -79,23 +80,22 @@ def deduplicate(detections, iou_threshold=0.4):
     return result
 
 
-class YoloAdDetector:
+class YoloAdDetector(ad.AdDetector):
     """Ad detector that encapsulates TF session and YOLO v.3 model."""
 
     def __init__(self, weights_file, confidence_threshold=CONF_THRESHOLD,
                  iou_threshold=IOU_THRESHOLD):
-        self.weights_file = weights_file
-        self.confidence_threshold = confidence_threshold
-        self.iou_threshold = iou_threshold
-        self._detect_params()
+        super().__init__(
+            weights_file=weights_file,
+            confidence_threshold=confidence_threshold,
+            iou_threshold=iou_threshold,
+        )
+        self._detect_yolo_params()
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             self._init_yolo()
 
-    def __str__(self):
-        return 'YoloAdDetector({})'.format(self.weights_file)
-
-    def _detect_params(self):
+    def _detect_yolo_params(self):
         """Autodetect model parameters based on the size of the weights file.
 
         First we detect how many object classes we have based on 61570957 float
@@ -157,7 +157,7 @@ class YoloAdDetector:
 
     def detect(self, image, path, confidence_threshold=None,
                iou_threshold=None):
-        """Detect ads in the image, return all detected boxes as a list.
+        """Detect ads in the image.
 
         Parameters
         ----------
@@ -173,7 +173,7 @@ class YoloAdDetector:
 
         Returns
         -------
-        detections : list of [x0, y0, x1, y1, confidence]
+        detections : list of (x0, y0, x1, y1, confidence)
             Detected ad boxes.
 
         """

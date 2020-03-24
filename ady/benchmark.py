@@ -1,5 +1,5 @@
 # This file is part of Ad Detect YOLO <https://adblockplus.org/>,
-# Copyright (C) 2019 eyeo GmbH
+# Copyright (C) 2019-present eyeo GmbH
 #
 # Ad Detect YOLO is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3 as
@@ -375,9 +375,6 @@ class LabeledDataset:
         ]
         logging.debug('Ad region types: {}'.format(self.ad_region_types))
 
-    def __str__(self):
-        return 'LabeledDataset({})'.format(self.path)
-
     def __iter__(self):
         """Yield images, paths and marked boxes.
 
@@ -394,27 +391,6 @@ class LabeledDataset:
                 if region[4] in self.ad_region_types
             ]
             yield PIL.Image.open(image_path), image_path, ad_boxes
-
-    def detect(self, image, image_path, **kw):
-        """Return ad detections based on marked regions.
-
-        Raises
-        ------
-        KeyError
-            If there are no regions for specific image in this dataset.
-
-        """
-        image_name = os.path.basename(image_path)
-        try:
-            regions = self.index[image_name]
-        except KeyError:
-            raise Exception('Regions information is missing for {} in {}'
-                            .format(image_name, self.path))
-
-        return [
-            region[:4] + (0.999,) for region in regions
-            if region[4] in self.ad_region_types
-        ]
 
 
 def match_detections(dataset, detector, **params):

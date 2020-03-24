@@ -30,7 +30,7 @@ setup(
     author='eyeo GmbH',
     author_email='info@adblockplus.org',
     url='https://gitlab.com/eyeo/sandbox/ad-detect-yolo',
-    packages=['ady'],
+    packages=['ady', 'ady.yolo'],
     entry_points={
         'console_scripts': [
             'adyws=ady.adyws:main',

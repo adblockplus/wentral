@@ -1,5 +1,5 @@
 # This file is part of Ad Detect YOLO <https://adblockplus.org/>,
-# Copyright (C) 2019 eyeo GmbH
+# Copyright (C) 2019-present eyeo GmbH
 #
 # Ad Detect YOLO is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3 as
@@ -20,13 +20,14 @@ import os
 import PIL
 import pytest
 
-import ady.detector as det
-
 DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
 
 
 @pytest.fixture(scope='session')
 def ad_detector():
+    # The following import takes time so we only do it if we need the fixture.
+    import ady.yolo.detector as det
+
     weights_file = os.environ['YOLOv3_WEIGHTS_PATH']
     return det.YoloAdDetector(weights_file)
 

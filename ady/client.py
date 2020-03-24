@@ -1,5 +1,5 @@
 # This file is part of Ad Detect YOLO <https://adblockplus.org/>,
-# Copyright (C) 2019 eyeo GmbH
+# Copyright (C) 2019-present eyeo GmbH
 #
 # Ad Detect YOLO is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3 as
@@ -16,20 +16,25 @@
 """Client for the ad detection web service."""
 
 import io
+import urllib.parse as urlparse
 
 import requests
 
+import ady.ad_detector as ad
 
-class ProxyAdDetector:
-    """Ad detector that forwards detection requests to a remote web service."""
 
-    def __init__(self, url):
-        if not url.endswith('/'):
-            url += '/'
-        self.url = url
+class ProxyAdDetector(ad.AdDetector):
+    """Ad detector that forwards detection requests to a remote web service.
 
-    def __str__(self):
-        return 'ProxyAdDetector({})'.format(self.url)
+    Parameters
+    ----------
+    server_url : str
+        URL of the server where ad detector web service is running.
+
+    """
+
+    def __init__(self, server_url):
+        super().__init__(server_url=server_url)
 
     def detect(self, image, path, **params):
         """Upload the image for ad detection and return the response.
@@ -56,7 +61,7 @@ class ProxyAdDetector:
             image.save(bio, format='PNG')
             image = bio.getvalue()
         request = requests.post(
-            self.url + 'detect',
+            urlparse.urljoin(self.server_url, 'detect'),
             files={'image': (path, image)},
             data=params,
         )
