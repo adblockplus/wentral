@@ -80,4 +80,10 @@ def kwargs_from_ns(func, args):
         elif v.default == v.empty:
             raise Exception('Parameter {} is required for detector {}'
                             .format(k, args.detector))
+    for extra in getattr(args, 'extra', []):
+        try:
+            name, value = extra.split('=')
+        except ValueError:
+            raise Exception('Invalid format of extra argument: ' + extra)
+        params[name] = value
     return params

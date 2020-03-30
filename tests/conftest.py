@@ -92,9 +92,14 @@ def shmetector(mocker, mock_detector):
     """Mock detector that can be imported into adybm and adyws with -d."""
     fqn = 'ady.Shmetector'
 
-    def construct_detector(weights_file, iou_threshold=0.5, missing=None):
+    def construct_detector(weights_file, iou_threshold=0.5, missing=None,
+                           extra_one=None, extra_two=None):
         """Mock of detector constructor. Note: it requires `weights_file`."""
         assert weights_file == '/a/b/c'
+        if extra_two is not None:
+            print('extra_two=' + extra_two)
+        if extra_one is not None:
+            print('extra_one=' + extra_one)
         mock_detector.name = ('MD(weights_file={}, iou_threshold={})'
                               .format(weights_file, iou_threshold))
         return mock_detector

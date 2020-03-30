@@ -43,20 +43,24 @@ mAP: 75.00%
 
 @pytest.mark.script_launch_mode('inprocess')
 @pytest.mark.parametrize('weights_file', [None, '/a/b/c'])
-def test_other(script_runner, shmetector, dataset_dir, weights_file):
+@pytest.mark.parametrize('extras', [
+    [],
+    ['-x', 'broken'],
+    ['--extra', 'extra_one=foo', '-x', 'extra_two=bar'],
+])
+def test_other(script_runner, shmetector, dataset_dir, weights_file, extras):
     """Test with -d ady.Shmetector (that requires weights_file)."""
     cmd = [
         'adybm',
         '-d', shmetector,
         str(dataset_dir),
-    ]
+    ] + extras
     if weights_file is not None:
         cmd[3:3] = ['-w', weights_file]
 
     result = script_runner.run(*cmd)
     if weights_file is not None:
-        assert result.success
-        assert result.stdout == """Overall results:
+        expected_output = """Overall results:
 N: 3
 TP:4 FN:2 FP:4
 Recall: 66.67%
@@ -64,6 +68,17 @@ Precision: 50.00%
 F1: 57.14%
 mAP: 75.00%
 """
+        if extras:
+            if 'broken' in extras:
+                assert not result.success
+                assert 'Invalid format of extra argument' in result.stderr
+                return
+
+            for i in range(1, len(extras), 2):
+                expected_output = extras[i] + '\n' + expected_output
+
+        assert result.success
+        assert result.stdout == expected_output
         assert result.stderr == ''
     else:
         # There's no default for --weights-file provided by the options parser

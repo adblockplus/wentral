@@ -71,6 +71,10 @@ def add_detector_args(parser):
         '--path', '-p', metavar='PATH',
         help='Path to a directory with marked regions (use with -d static)',
     )
+    parser.add_argument(
+        '--extra', '-x', metavar='ARGNAME=VALUE', action='append', default=[],
+        help='Pass an extra argument to the detector',
+    )
 
 
 def load_detector_class(path):
