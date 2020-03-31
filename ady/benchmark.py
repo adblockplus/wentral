@@ -41,6 +41,13 @@ def _recall(tp, fn):
         return tp / (tp + fn)
 
 
+def _f1(tp, fp, fn):
+    """Calculate F1 score from true and false positives and false negatives."""
+    p = _precision(tp, fp)
+    r = _recall(tp, fn)
+    return 2 * p * r / (p + r)
+
+
 class MatchSet:
     """Detected and expected boxes and information about their matching.
 
@@ -156,9 +163,10 @@ class MatchSet:
 
         self.recall = _recall(self.tp, self.fn)
         self.precision = _precision(self.tp, self.fp)
+        self.f1 = _f1(self.tp, self.fp, self.fn)
 
         logging.info('TP:{0.tp} FN:{0.fn} FP:{0.fp} Recall:{0.recall:.2%} '
-                     'Precision:{0.precision:.2%}'.format(self))
+                     'Precision:{0.precision:.2%} F1:{0.f1}'.format(self))
 
     def to_dict(self):
         return dict(self.__dict__)
@@ -321,6 +329,7 @@ class Evaluation:
         self.dataset = dataset
         self.detector = detector
         self.matchsets = matchsets
+        self.image_count = len(matchsets)
 
         self.tp = 0
         self.fn = 0
@@ -332,6 +341,7 @@ class Evaluation:
 
         self.recall = _recall(self.tp, self.fn)
         self.precision = _precision(self.tp, self.fp)
+        self.f1 = _f1(self.tp, self.fp, self.fn)
         self.mAP = average_precision(
             sum([ms.detections for ms in self.matchsets], []),
             sum([ms.ground_truth for ms in self.matchsets], []),
@@ -344,7 +354,9 @@ class Evaluation:
             'fp': self.fp,
             'recall': self.recall,
             'precision': self.precision,
+            'f1': self.f1,
             'mAP': self.mAP,
+            'image_count': self.image_count,
             'images': [ms.to_dict() for ms in self.matchsets],
             'dataset': str(self.dataset),
             'detector': str(self.detector),
