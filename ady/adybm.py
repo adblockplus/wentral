@@ -23,9 +23,11 @@ import ady.benchmark as bm
 import ady.config as conf
 
 RESULTS_TEMPLATE = """Overall results:
+N: {0.image_count}
 TP:{0.tp} FN:{0.fn} FP:{0.fp}
 Recall: {0.recall:.2%}
 Precision: {0.precision:.2%}
+F1: {0.f1:.2%}
 mAP: {0.mAP:.2%}"""
 
 

@@ -31,9 +31,11 @@ def test_server(script_runner, dataset_dir, webservice):
     )
     assert result.success
     assert result.stdout == """Overall results:
+N: 3
 TP:4 FN:2 FP:4
 Recall: 66.67%
 Precision: 50.00%
+F1: 57.14%
 mAP: 75.00%
 """
     assert result.stderr == ''
@@ -55,9 +57,11 @@ def test_other(script_runner, shmetector, dataset_dir, weights_file):
     if weights_file is not None:
         assert result.success
         assert result.stdout == """Overall results:
+N: 3
 TP:4 FN:2 FP:4
 Recall: 66.67%
 Precision: 50.00%
+F1: 57.14%
 mAP: 75.00%
 """
         assert result.stderr == ''
@@ -79,9 +83,11 @@ def test_static(script_runner, dataset_dir):
     )
     assert result.success
     assert result.stdout == """Overall results:
+N: 3
 TP:6 FN:0 FP:0
 Recall: 100.00%
 Precision: 100.00%
+F1: 100.00%
 mAP: 100.00%
 """
     assert result.stderr == ''
@@ -125,11 +131,13 @@ def test_json(script_runner, dataset_dir, tmpdir, webservice):
     assert result.stdout == ''
     assert result.stderr == ''
     result = json.load(json_path.open())
+    assert result['image_count'] == 3
     assert result['tp'] == result['fp'] == 4
     assert result['fn'] == 2
     assert result['precision'] == pytest.approx(0.5, 0.001)
     assert result['recall'] == pytest.approx(0.6667, 0.001)
     assert result['mAP'] == pytest.approx(0.75, 0.001)
+    assert result['f1'] == pytest.approx(0.5714, 0.001)
 
 
 @pytest.mark.script_launch_mode('inprocess')
@@ -144,9 +152,11 @@ def test_iou(script_runner, dataset_dir, webservice):
     )
     assert result.success
     assert result.stdout == """Overall results:
+N: 3
 TP:6 FN:0 FP:2
 Recall: 100.00%
 Precision: 75.00%
+F1: 85.71%
 mAP: 95.14%
 """
     assert result.stderr == ''
