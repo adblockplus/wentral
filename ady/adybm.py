@@ -82,3 +82,6 @@ def main():
     if args.output:
         with open(args.output, 'wt', encoding='utf-8') as out_file:
             json.dump(evaluation.to_dict(), out_file, indent=2, sort_keys=True)
+
+if __name__ == '__main__':
+    main()
