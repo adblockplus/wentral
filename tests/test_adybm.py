@@ -165,10 +165,11 @@ mAP: 95.14%
 @pytest.mark.script_launch_mode('inprocess')
 def test_visualize_out_files(script_runner, dataset_dir, tmpdir, webservice):
     """Test vizualizing the detection boxes."""
-    expect_vis = {
+    vis_images = {
         i.basename for i in dataset_dir.listdir()
         if i.ext == '.png'
     }
+    vis_ui = {'data.js', 'index.html', 'visualization.js'}
     vis_dir = tmpdir.join('vis_dir')
 
     result = script_runner.run(
@@ -181,7 +182,8 @@ def test_visualize_out_files(script_runner, dataset_dir, tmpdir, webservice):
 
     assert result.success
     assert vis_dir.check(dir=1)
-    assert {i.basename for i in vis_dir.listdir()} == expect_vis
+    assert {i.basename for i in vis_dir.listdir()} == vis_images | vis_ui
 
-    # We don't check that the boxes are drawn correctly and rely on the unit
-    # test in test_visualization.py to ensure that.
+    # We don't check that the boxes are drawn correctly and that the data in
+    # data.js is right. The tests in test_visualization.py check that and we
+    # trust that this is enough.

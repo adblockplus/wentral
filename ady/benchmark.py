@@ -45,6 +45,8 @@ def _f1(tp, fp, fn):
     """Calculate F1 score from true and false positives and false negatives."""
     p = _precision(tp, fp)
     r = _recall(tp, fn)
+    if p == 0 and r == 0:
+        return 0
     return 2 * p * r / (p + r)
 
 
@@ -132,34 +134,34 @@ class MatchSet:
                 self.detections[j] += (False,)
 
     @property
-    def _detected_ground_truth(self):
+    def detected_ground_truth(self):
         """The list of ground truth boxes that have been detected."""
         return [box for box in self.ground_truth
                 if box[4] >= self.confidence_threshold]
 
     @property
-    def _missed_ground_truth(self):
+    def missed_ground_truth(self):
         """The list of ground truth boxes that have not been detected."""
         return [box for box in self.ground_truth
                 if box[4] < self.confidence_threshold]
 
     @property
-    def _true_detections(self):
+    def true_detections(self):
         """The list of detections that matched some ground truth boxes."""
         return [det for det in self.detections
                 if det[4] >= self.confidence_threshold and det[5]]
 
     @property
-    def _false_detections(self):
+    def false_detections(self):
         """The list of detections that don't match any ground truth boxes."""
         return [det for det in self.detections
                 if det[4] >= self.confidence_threshold and not det[5]]
 
     def _calculate_metrics(self):
         """Calculate metrics: tp, fn, fp, recall and precision."""
-        self.tp = len(self._detected_ground_truth)
-        self.fn = len(self._missed_ground_truth)
-        self.fp = len(self._false_detections)
+        self.tp = len(self.detected_ground_truth)
+        self.fn = len(self.missed_ground_truth)
+        self.fp = len(self.false_detections)
 
         self.recall = _recall(self.tp, self.fn)
         self.precision = _precision(self.tp, self.fp)
@@ -468,4 +470,8 @@ def evaluate(dataset, detector, **params):
     if 'visualizations_path' in params:
         os.makedirs(params['visualizations_path'], exist_ok=True)
     matchsets = list(match_detections(dataset, detector, **params))
-    return Evaluation(dataset, detector, matchsets)
+    evaluation = Evaluation(dataset, detector, matchsets)
+    if 'visualizations_path' in params:
+        vis.write_data_js(evaluation, params['visualizations_path'])
+        vis.write_index_html(params['visualizations_path'])
+    return evaluation

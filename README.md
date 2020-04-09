@@ -134,7 +134,10 @@ misguiding results this is considered an error.
 
 You can produce visualizations with detection boxes and ground truth displayed
 on top of the original images. Use `--visualizations-path` (`-z`) option
-followed by the output directory for the visualizations.
+followed by the output directory for the visualizations. The directory gets
+populated with images containing the original screenshots with detection and
+ground truth displayed on them as well as an HTML UI for browsing them in
+`index.html`.
 
 The colors of the displayed boxes will be as follows:
 
@@ -148,9 +151,34 @@ them in %.
 
 ## Testing
 
-Make sure that `YOLOv3_WEIGHTS_PATH` is set and run the tests with `tox`.
-Currently there's just one test and it expects the weights to be from the
-Ad-versarial repo.
+### Python
+
+We use [Tox][4] for testing Python code and Python linting. Install Tox with
+pip if you haven't already and then run the tests with:
+
+    $ tox
+
+### JavaScript
+
+There's also a tiny bit of JavaScript in this repo. Unfortunately it has no
+tests, but you can lint it using [ESLint][5] (more info on eyeo eslint config
+[here][3]). Make sure you have ESLint and eyeo config installed:
+
+    $ npm install -g eslint eslint-config-eyeo
+
+and then run:
+
+    $ eslint ady/vis_ui/visualization.js
+
+You only need to do it if you changed that file of course.
+
+### CI
+
+The CI setup in the GitLab repository runs both Python tests and JavaScript
+linting. It's configured via [.gitlab-ci.yml](.gitlab-ci.yml).
 
 [1]: https://github.com/ftramer/ad-versarial/releases
 [2]: https://github.com/ftramer/ad-versarial/
+[3]: https://gitlab.com/eyeo/auxiliary/eyeo-coding-style/-/tree/master/eslint-config-eyeo
+[4]: https://tox.readthedocs.io/en/latest/
+[5]: https://eslint.org/
