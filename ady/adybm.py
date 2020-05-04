@@ -16,11 +16,11 @@
 """Benchmarking tool for ad detection models."""
 
 import argparse
-import json
 import logging
 
 import ady.benchmark as bm
 import ady.config as conf
+import ady.dataset as ds
 
 RESULTS_TEMPLATE = """Overall results:
 N: {0.image_count}
@@ -75,7 +75,11 @@ def main():
     if args.visualizations_path:
         params['visualizations_path'] = args.visualizations_path
 
-    dataset = bm.LabeledDataset(args.dataset)
+    if args.dataset.endswith('.json'):
+        dataset = ds.JsonDataset(args.dataset)
+    else:
+        dataset = ds.LabeledDataset(args.dataset)
+
     evaluation = bm.evaluate(dataset, detector, **params)
 
     if not args.output or args.verbose > 0:
@@ -83,4 +87,4 @@ def main():
 
     if args.output:
         with open(args.output, 'wt', encoding='utf-8') as out_file:
-            json.dump(evaluation.to_dict(), out_file, indent=2, sort_keys=True)
+            evaluation.json_dump(out_file)

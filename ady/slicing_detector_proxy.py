@@ -23,14 +23,8 @@ import functools
 import math
 
 import ady.ad_detector as ad
+import ady.constants as const
 import ady.utils as utils
-
-
-class Defaults:
-    """Default values for detector proxy parameters."""
-    IOU_THRESHOLD = 0.4
-    SLICING_THRESHOLD = 0.7
-    SLICE_OVERLAP = 0.2
 
 
 def _to_absolute(detection, box):
@@ -50,9 +44,9 @@ class SlicingDetectorProxy(ad.AdDetector):
 
     """
 
-    def __init__(self, detector, iou_threshold=Defaults.IOU_THRESHOLD,
-                 slicing_threshold=Defaults.SLICING_THRESHOLD,
-                 slice_overlap=Defaults.SLICE_OVERLAP):
+    def __init__(self, detector, iou_threshold=const.IOU_THRESHOLD,
+                 slicing_threshold=const.SLICING_THRESHOLD,
+                 slice_overlap=const.SLICE_OVERLAP):
         """Constructor.
 
         Parameters

@@ -1,5 +1,5 @@
 # This file is part of Ad Detect YOLO <https://adblockplus.org/>,
-# Copyright (C) 2019 eyeo GmbH
+# Copyright (C) 2019-present eyeo GmbH
 #
 # Ad Detect YOLO is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3 as
@@ -24,6 +24,8 @@ import wsgi_intercept as icpt
 from wsgi_intercept import requests_intercept
 
 import ady.webservice as ws
+import ady.benchmark as bm
+import ady.dataset as ds
 
 
 class MockAdDetector:
@@ -129,3 +131,19 @@ def dataset_dir(tmpdir_factory):
     ]))
 
     return ret
+
+
+@pytest.fixture()
+def dataset(dataset_dir):
+    """Dataset loaded from `dataset_dir`."""
+    return ds.LabeledDataset(str(dataset_dir))
+
+
+@pytest.fixture()
+def json_output(dataset, mock_detector, tmpdir):
+    """JSON file with an output of a run."""
+    evaluation = bm.evaluate(dataset, mock_detector)
+    json_file = tmpdir.join('output.json')
+    with json_file.open('wt', encoding='utf-8') as jf:
+        evaluation.json_dump(jf)
+    return json_file

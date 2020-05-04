@@ -18,10 +18,10 @@
 import os
 
 import ady.ad_detector as ad
-import ady.benchmark as bm
+import ady.dataset as ds
 
 
-class StaticDetector(ad.AdDetector, bm.LabeledDataset):
+class StaticDetector(ad.AdDetector, ds.LabeledDataset):
     """Detector based on a region index.
 
     Parameters
@@ -33,7 +33,7 @@ class StaticDetector(ad.AdDetector, bm.LabeledDataset):
 
     def __init__(self, path):
         ad.AdDetector.__init__(self, path=path)
-        bm.LabeledDataset.__init__(self, path)
+        ds.LabeledDataset.__init__(self, path)
 
     def detect(self, image, image_path, **kw):
         """Return ad detections based on marked regions.

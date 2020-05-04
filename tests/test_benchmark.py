@@ -103,12 +103,6 @@ def test_ap_all_1(detections, ground_truth, expect_ap):
     assert ap == expect_ap
 
 
-@pytest.fixture()
-def dataset(dataset_dir):
-    """Dataset wrapper over prepared images and regions."""
-    return bm.LabeledDataset(str(dataset_dir))
-
-
 def assert_match_set(ms, tp, fn, fp, precision, recall, mAP=None):
     assert ms.tp == tp
     assert ms.fn == fn

@@ -15,11 +15,9 @@
 
 """Compare ad detections to the ground truth."""
 
+import json
 import logging
 import os
-
-import admincer.index as idx
-import PIL
 
 import ady.utils as u
 import ady.visualization as vis
@@ -362,49 +360,21 @@ class Evaluation:
             'images': [ms.to_dict() for ms in self.matchsets],
             'dataset': str(self.dataset),
             'detector': str(self.detector),
+            'images_path': self.dataset.images_path
         }
         return ret
 
+    def json_dump(self, out_file):
+        """Write this evaluation into a JSON file.
 
-class LabeledDataset:
-    """A set of images with marked regions.
-
-    Attributes
-    ----------
-    path : str
-        Path to the images and region files.
-    index : FragmentIndex
-        Index of regions.
-    ad_region_types : list of str
-        Region types that are considered ads.
-
-    """
-
-    def __init__(self, path):
-        self.path = path
-        self.index = idx.reg_index(path)
-        self.ad_region_types = [
-            rt for rt in self.index.region_types
-            if 'label' not in rt
-        ]
-        logging.debug('Ad region types: {}'.format(self.ad_region_types))
-
-    def __iter__(self):
-        """Yield images, paths and marked boxes.
-
-        Yields
-        ------
-        image_data : (Image, set, list of tuple)
-            Images, their paths and ad boxes.
+        Parameters
+        ----------
+        out_file : file
+            File to write to. It must be a text file opened in unicode mode
+            with utf-8 encoding.
 
         """
-        for image_name in sorted(self.index):
-            image_path = os.path.join(self.path, image_name)
-            ad_boxes = [
-                region[:4] for region in self.index[image_name]
-                if region[4] in self.ad_region_types
-            ]
-            yield PIL.Image.open(image_path), image_path, ad_boxes
+        json.dump(self.to_dict(), out_file, indent=2, sort_keys=True)
 
 
 def match_detections(dataset, detector, **params):

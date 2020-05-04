@@ -1,5 +1,5 @@
 # This file is part of Ad Detect YOLO <https://adblockplus.org/>,
-# Copyright (C) 2019 eyeo GmbH
+# Copyright (C) 2019-present eyeo GmbH
 #
 # Ad Detect YOLO is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3 as
@@ -24,13 +24,10 @@ import numpy as np
 
 import ady.ad_detector as ad
 import ady.utils as u
+import ady.constants as const
 
 # Default size of the input image for the detector.
 YOLO_SIZE = 416
-
-# Detection parameters
-CONF_THRESHOLD = 0.5     # Level of confidence that we count as detection.
-IOU_THRESHOLD = 0.4      # IOU above which two boxes are considered the same.
 
 # Region type (a.k.a. class) that means "advertisement".
 AD_TYPE = 0
@@ -75,8 +72,8 @@ def deduplicate(detections, iou_threshold=0.4):
 class YoloAdDetector(ad.AdDetector):
     """Ad detector that encapsulates TF session and YOLO v.3 model."""
 
-    def __init__(self, weights_file, confidence_threshold=CONF_THRESHOLD,
-                 iou_threshold=IOU_THRESHOLD):
+    def __init__(self, weights_file, confidence_threshold=const.CONF_THRESHOLD,
+                 iou_threshold=const.IOU_THRESHOLD):
         super().__init__(
             weights_file=weights_file,
             confidence_threshold=confidence_threshold,

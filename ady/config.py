@@ -21,9 +21,10 @@ import logging
 import ady.utils as utils
 
 DETECTOR_SHORTCUTS = {
-    'yolo': 'ady.yolo.detector.YoloAdDetector',
+    'json': 'ady.json_detector.JsonDetector',
     'server': 'ady.client.ProxyAdDetector',
     'static': 'ady.static_detector.StaticDetector',
+    'yolo': 'ady.yolo.detector.YoloAdDetector',
 }
 
 DEFAULT_DETECTOR = 'yolo'
@@ -47,8 +48,8 @@ def add_detector_args(parser):
     """
     parser.add_argument(
         '--detector', '-d', metavar='CLASS', default=DEFAULT_DETECTOR,
-        help='Detector class (full name or shortcut: yolo, server, static; '
-             'default: yolo)',
+        help='Detector class (full name or shortcut: yolo, server, static, '
+             'json; default: yolo)',
     )
     parser.add_argument(
         '--confidence-threshold', '-c', metavar='X', type=float, default=0.5,

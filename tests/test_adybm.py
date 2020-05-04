@@ -1,5 +1,5 @@
 # This file is part of Ad Detect YOLO <https://adblockplus.org/>,
-# Copyright (C) 2019 eyeo GmbH
+# Copyright (C) 2019-present eyeo GmbH
 #
 # Ad Detect YOLO is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3 as
@@ -19,6 +19,16 @@ import json
 
 import pytest
 
+# This is the output you get from running mock_detector on the test dataset.
+EXPECTED_OUTPUT = """Overall results:
+N: 3
+TP:4 FN:2 FP:4
+Recall: 66.67%
+Precision: 50.00%
+F1: 57.14%
+mAP: 75.00%
+"""
+
 
 @pytest.mark.script_launch_mode('inprocess')
 def test_server(script_runner, dataset_dir, webservice):
@@ -30,14 +40,7 @@ def test_server(script_runner, dataset_dir, webservice):
         str(dataset_dir),
     )
     assert result.success
-    assert result.stdout == """Overall results:
-N: 3
-TP:4 FN:2 FP:4
-Recall: 66.67%
-Precision: 50.00%
-F1: 57.14%
-mAP: 75.00%
-"""
+    assert result.stdout == EXPECTED_OUTPUT
     assert result.stderr == ''
 
 
@@ -60,14 +63,7 @@ def test_other(script_runner, shmetector, dataset_dir, weights_file, extras):
 
     result = script_runner.run(*cmd)
     if weights_file is not None:
-        expected_output = """Overall results:
-N: 3
-TP:4 FN:2 FP:4
-Recall: 66.67%
-Precision: 50.00%
-F1: 57.14%
-mAP: 75.00%
-"""
+        expected_output = EXPECTED_OUTPUT
         if extras:
             if 'broken' in extras:
                 assert not result.success
@@ -132,8 +128,8 @@ def test_static_missing(script_runner, dataset_dir, dataset_copy):
 
 
 @pytest.mark.script_launch_mode('inprocess')
-def test_json(script_runner, dataset_dir, tmpdir, webservice):
-    """Test verbosity levels."""
+def test_json_output(script_runner, dataset_dir, tmpdir, webservice):
+    """Test JSON output."""
     json_path = tmpdir.join('output.json')
     result = script_runner.run(
         'adybm',
@@ -153,6 +149,58 @@ def test_json(script_runner, dataset_dir, tmpdir, webservice):
     assert result['recall'] == pytest.approx(0.6667, 0.001)
     assert result['mAP'] == pytest.approx(0.75, 0.001)
     assert result['f1'] == pytest.approx(0.5714, 0.001)
+
+
+@pytest.mark.script_launch_mode('inprocess')
+@pytest.mark.parametrize('extra_args', [[], ['-c', '0.9']])
+def test_json_detector(script_runner, dataset_dir, json_output, extra_args):
+    """Test -d json and loading ground truth from the same JSON file."""
+    cmd = [
+        'adybm',
+        '-d', 'json',
+        '-p', str(json_output),
+        str(dataset_dir),
+    ]
+    if extra_args:
+        cmd[-1:-1] = extra_args
+
+    result = script_runner.run(*cmd)
+
+    assert result.success
+    assert result.stderr == ''
+
+    if extra_args:
+        # With high confidence threshold there are no false positives.
+        assert 'Precision: 100.00%' in result.stdout
+    else:
+        assert 'Precision: 50.00%' in result.stdout
+
+
+@pytest.mark.script_launch_mode('inprocess')
+def test_json_dataset(script_runner, webservice, json_output, tmpdir):
+    """Test loading the dataset from a JSON file."""
+    json_output2 = tmpdir.join('output2.json')
+    result = script_runner.run(
+        'adybm',
+        '-d', 'server',
+        '-s', webservice['url'],
+        '-o', str(json_output2),
+        str(json_output),
+    )
+    assert result.success
+    assert result.stdout == ''
+    assert result.stderr == ''
+
+    # Do it again with the output of the run above.
+    result = script_runner.run(
+        'adybm',
+        '-d', 'server',
+        '-s', webservice['url'],
+        str(json_output2),
+    )
+    assert result.success
+    assert result.stdout == EXPECTED_OUTPUT
+    assert result.stderr == ''
 
 
 @pytest.mark.script_launch_mode('inprocess')

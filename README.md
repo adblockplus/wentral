@@ -130,6 +130,34 @@ contain region marking for all images in the latter. Otherwise it's not
 possible to produce detections for the missing images and to avoid giving out
 misguiding results this is considered an error.
 
+### Usage with JSON output of another adybm run
+
+Sometimes it could be useful to re-use the detections from another run. It can
+be to try different values of confidence threshold or IoU threshold or to
+produce visualizations. There's a built-in detector implementation that does
+this:
+
+    $ adybm -d json -p previous-run.json dataset_path
+
+This will load detections from `previous-run.json` (that was produced using
+`--output` option). Different confidence and IoU thresholds can be applied to
+produce different results from the orginal run.
+
+All detections with confidence above 0.001 will be included in the JSON output
+(with duplicates removed), so it's possible to take an output of a run with
+high confidence threshold and reevaluate it with a lower confidence threshold.
+The reverse is also possible of course.
+
+In addition to using JSON output as a source of detections, it can also be used
+as the source of the ground truth. In order to do it, give the JSON file as the
+dataset parameter:
+
+    $ adybm -d yolo -w yolo.weights previous-run.json
+
+Note: The JSON file contains the path to the original images, but it doesn't 
+contain the images themselves. If the images are not where they were when the
+JSON file was produced, the JSON file cannot be used as a dataset anymore.
+
 ### Visualizing model performance
 
 You can produce visualizations with detection boxes and ground truth displayed
