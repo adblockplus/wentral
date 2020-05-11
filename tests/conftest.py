@@ -120,6 +120,7 @@ def dataset_dir(tmpdir_factory):
         Image.new('RGB', (100, 100), (0, 0, 0)).save(str(path))
 
     ret.join('index.csv').write('\n'.join([
+        'image,xmin,ymin,xmax,ymax,label',
         '0.png,0,0,50,20,ad',
         '0.png,10,0,20,5,ad_label',
         '0.png,80,10,95,50,textad',
