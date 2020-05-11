@@ -2,7 +2,7 @@ test:
   image: python:3.7
   script:
   - pip install tox
-  - tox -e py37,lint
+  - tox -e py37,lint,pinned
 
 eslint:
   image: "registry.gitlab.com/eyeo/docker/adblockplus-ci:node10"

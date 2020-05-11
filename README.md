@@ -200,6 +200,14 @@ and then run:
 
 You only need to do it if you changed that file of course.
 
+### Pinned dependencies
+
+There's a special Tox environment that makes sure that `python setup.py
+install` doesn't override any fixed dependencies from `requirements.txt`. It
+can be invoked by `tox -e pinned`. This environment is included in the CI setup
+(see below), so conflicts between `requirements.txt` and `setup.py` dependency
+versions are considered a fatal error.
+
 ### CI
 
 The CI setup in the GitLab repository runs both Python tests and JavaScript
