@@ -6,4 +6,9 @@ dist/
 .tox/
 .coverage
 
+# Artifact from tox -e pinned.
 pinned-install.log
+
+# Node modules for linting the JS part.
+node_modules/
+package-lock.json

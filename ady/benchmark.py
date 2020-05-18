@@ -410,10 +410,7 @@ def match_detections(dataset, detector, **params):
         ms = MatchSet(image_name, detected_boxes, expected_boxes, **params)
 
         if 'visualizations_path' in params:
-            visualization = vis.visualize_match_set(ms, image)
-            image_name = os.path.basename(image_path)
-            vis_path = os.path.join(params['visualizations_path'], image_name)
-            visualization.save(vis_path)
+            vis.visualize_match_set(ms, image, params['visualizations_path'])
 
         yield ms
 

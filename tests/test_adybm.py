@@ -228,11 +228,31 @@ mAP: 95.14%
 @pytest.mark.script_launch_mode('inprocess')
 def test_visualize_out_files(script_runner, dataset_dir, tmpdir, webservice):
     """Test vizualizing the detection boxes."""
-    vis_images = {
-        i.basename for i in dataset_dir.listdir()
-        if i.ext == '.png'
+    vis_expect = {
+        # Visualization images.
+        '0.png',
+        '0_dgt_0,0-50,20.png',
+        '0_dgt_80,10-95,50.png',
+        '0_fd_0,70-50,90.png',
+        '0_td_0,0-50,20.png',
+        '0_td_82,12-94,45.png',
+        '1.png',
+        '1_dgt_10,10-80,25.png',
+        '1_fd_10,30-30,60.png',
+        '1_td_10,10-80,25.png',
+        '2.png',
+        '2_dgt_60,60-90,90.png',
+        '2_fd_20,20-50,50.png',
+        '2_fd_5,5-15,15.png',
+        '2_mgt_0,0-20,20.png',
+        '2_mgt_30,30-40,40.png',
+        '2_td_60,60-90,90.png',
+        # Data.
+        'data.js',
+        # The UI itself.
+        'index.html',
+        'visualization.js',
     }
-    vis_ui = {'data.js', 'index.html', 'visualization.js'}
     vis_dir = tmpdir.join('vis_dir')
 
     result = script_runner.run(
@@ -245,8 +265,8 @@ def test_visualize_out_files(script_runner, dataset_dir, tmpdir, webservice):
 
     assert result.success
     assert vis_dir.check(dir=1)
-    assert {i.basename for i in vis_dir.listdir()} == vis_images | vis_ui
+    assert {i.basename for i in vis_dir.listdir()} == vis_expect
 
-    # We don't check that the boxes are drawn correctly and that the data in
-    # data.js is right. The tests in test_visualization.py check that and we
-    # trust that this is enough.
+    # We don't check that the boxes are drawn and extracted correctly and that
+    # the data in data.js is right. The tests in test_visualization.py check
+    # that and we trust that this is enough.

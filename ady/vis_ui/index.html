@@ -40,6 +40,17 @@ body {
   border-radius: 3px;
   color: navy;
   font-weight: bold;
+  cursor: pointer;
+}
+
+#navi button.off {
+  color: white;
+  background: #448;
+  border: 1px solid #448;
+}
+
+#navi input {
+  cursor: pointer;
 }
 
 #navi button:disabled {
@@ -61,10 +72,30 @@ body {
 }
 
 #images img {
-  border: 1px dotted grey;
   height: auto;
   width: auto;
   margin: 1px;
+  cursor: pointer;
+}
+
+#images img.screenshot {
+  border: 1px dotted grey;
+}
+
+#images img.td {
+  border: 2px solid green;
+}
+
+#images img.fd {
+  border: 2px solid orange;
+}
+
+#images img.dt {
+  border: 2px solid blue;
+}
+
+#images img.mt {
+  border: 2px solid red;
 }
 
 #magnified {
@@ -72,10 +103,14 @@ body {
   z-index: 100;
   top: 0;
   left: 0;
+  cursor: pointer;
+  background: grey;
+  max-height: 100%;
+  max-width: 100%;
+  overflow: auto;
 }
 
 #magnified img {
-  background: grey;
   border: none;
   max-height: 97vh;
   max-width: 97vw;
@@ -91,37 +126,46 @@ body {
     <div id="navi">
       <h1>Detections browser</h1>
 
+      <span class="section" id="mode-buttons">
+        <button onclick="switchMode('screenshots')"
+          id="mode-screenshots" class="off">Screenshots</button>
+        <button onclick="switchMode('detections')"
+          id="mode-detections" class="off">Detections</button>
+      </span>
+
       <span class="section">
         <span title="Show all images">
-          All <input type="checkbox" id="all-cb" checked
-                     onclick="typesChanged()" />
+          <b>All</b> <input type="checkbox" id="all-cb" checked
+                     onclick="currentMode.typesChanged()" />
         </span>
         <span title="Show images with false positives">
-          FP <input type="checkbox" id="fp-cb" checked
-                    onclick="typesChanged()" />
+          <b style="color: orange">FP</b>
+          <input type="checkbox" id="fp-cb" checked
+                 onclick="currentMode.typesChanged()" />
         </span>
         <span title="Show images with false negatives">
-          FN <input type="checkbox" id="fn-cb" checked
-                    onclick="typesChanged()" />
+          <b style="color: red">FN</b>
+          <input type="checkbox" id="fn-cb" checked
+                 onclick="currentMode.typesChanged()" />
         </span>
-      </span>
-      <span class="section">
-        Page <span id="page-no"></span>&nbsp;
-        <button id="prev" onclick="prevPage()">&lt;</button>
-        <input type="range" min="1" max="1" value="1" step="1"
-               class="slider" id="page-slider" onchange="pageChanged()">
-        <button id="next" onclick="nextPage()">&gt;</button>
       </span>
 
       <span class="section">
         Size
         <input type="range" min="0" max="0" value="0" step="1"
-               class="slider" id="size-slider" onchange="sizeChanged()">
+               class="slider" id="size-slider"
+               onchange="currentMode.sizeChanged()">
       </span>
 
-      <span class="section">
-        click images to (un)magnify
+      <span class="section" id="pager">
+        Page <span id="page-no"></span>&nbsp;
+        <button id="prev" onclick="currentMode.prevPage()">&lt;</button>
+        <input type="range" min="1" max="1" value="1" step="1"
+               class="slider" id="page-slider"
+               onchange="currentMode.pageChanged()">
+        <button id="next" onclick="currentMode.nextPage()">&gt;</button>
       </span>
+
     </div>
 
     <div id="images"></div>
