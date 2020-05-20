@@ -119,22 +119,12 @@ def make_summary_dict(evaluation):
     ]
 
 
-def write_data_js(evaluation, visualizations_path):
-    """Dump evaluation to JS data file for visualization UI."""
+def write_data_json(evaluation, visualizations_path):
+    """Dump evaluation to JSON file for visualization UI."""
     summary = make_summary_dict(evaluation)
-    out_path = os.path.join(visualizations_path, 'data.js')
+    out_path = os.path.join(visualizations_path, 'data.json')
     with open(out_path, 'wt', encoding='utf-8') as f:
-        f.write('imageData = ')
         json.dump(summary, f, indent=2)
-        f.write(';')
-
-
-def read_data_js(visualizations_path):
-    """Read JS data from visualizations directory."""
-    data_js_path = os.path.join(visualizations_path, 'data.js')
-    with open(data_js_path, 'rt', encoding='utf-8') as f:
-        data = f.read()
-        return json.loads(data[12:-1])
 
 
 def write_index_html(visualizations_path):

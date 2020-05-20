@@ -165,7 +165,9 @@ on top of the original images. Use `--visualizations-path` (`-z`) option
 followed by the output directory for the visualizations. The directory gets
 populated with images containing the original screenshots with detection and
 ground truth displayed on them as well as an HTML UI for browsing them in
-`index.html`.
+`index.html` (the UI can be viewed locally with `python -m http.server`, or
+can be hosted at a more serious webserver, or cloud static hosting like Amazon
+S3 or Google Cloud Storage).
 
 The colors of the displayed boxes will be as follows:
 

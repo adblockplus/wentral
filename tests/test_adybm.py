@@ -248,7 +248,7 @@ def test_visualize_out_files(script_runner, dataset_dir, tmpdir, webservice):
         '2_mgt_30,30-40,40.png',
         '2_td_60,60-90,90.png',
         # Data.
-        'data.js',
+        'data.json',
         # The UI itself.
         'index.html',
         'visualization.js',

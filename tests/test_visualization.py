@@ -79,12 +79,9 @@ def test_vis_match_set(match_set, tmpdir):
 
 
 def test_data_js(evaluation, tmpdir):
-    vis.write_data_js(evaluation, str(tmpdir))
+    vis.write_data_json(evaluation, str(tmpdir))
 
-    data_js_content = tmpdir.join('data.js').read()
-    assert data_js_content.startswith('imageData = [')
-    assert data_js_content.endswith('];')
-    data = json.loads(data_js_content[12:-1])
+    data = json.loads(tmpdir.join('data.json').read())
     assert data[0] == {
         'name': 'foo.png',
         'tp': 1,
@@ -114,9 +111,6 @@ def test_data_js(evaluation, tmpdir):
             }],
         },
     }
-
-    data_ = vis.read_data_js(str(tmpdir))
-    assert data == data_
 
 
 def test_index_html(tmpdir):

@@ -1,8 +1,7 @@
 {
   "extends": "eslint-config-eyeo",
   "root": true,
-  "globals": {
-    "document": "readonly",
-    "imageData": "readonly"
+  "env": {
+    "browser": 1
   }
 }

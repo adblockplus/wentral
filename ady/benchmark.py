@@ -439,6 +439,6 @@ def evaluate(dataset, detector, **params):
     matchsets = list(match_detections(dataset, detector, **params))
     evaluation = Evaluation(dataset, detector, matchsets)
     if 'visualizations_path' in params:
-        vis.write_data_js(evaluation, params['visualizations_path'])
+        vis.write_data_json(evaluation, params['visualizations_path'])
         vis.write_index_html(params['visualizations_path'])
     return evaluation

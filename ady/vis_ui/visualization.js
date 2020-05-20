@@ -42,6 +42,18 @@ function makeElement(tag, params)
   return element;
 }
 
+function showError(message)
+{
+  getById("messages").append(makeElement("div", {
+    className: "error",
+    textContent: message,
+    onclick()
+    {
+      this.remove();
+    }
+  }));
+}
+
 // Base class for ScreenshotsMode and DetectionsMode.
 class Mode
 {
@@ -184,6 +196,7 @@ class Mode
     this.showAll = getById("all-cb").checked;
     this.showFP = getById("fp-cb").checked;
     this.showFN = getById("fn-cb").checked;
+    this.pageNo = 1; // Reset page number so we don't end up on an empty one.
     this.draw();
   }
 
@@ -229,7 +242,7 @@ class DetectionsMode extends Mode
   constructor(images)
   {
     let all = [];
-    imageData.map(image =>
+    images.map(image =>
     {
       for (let [type, boxes] of [["td", image.detections.true],
                                  ["fd", image.detections.false],
@@ -276,24 +289,55 @@ class DetectionsMode extends Mode
   }
 }
 
-const modes = {
-  screenshots: new ScreenshotsMode(imageData),
-  detections: new DetectionsMode(imageData)
-};
+function loadData(path)
+{
+  let req = new XMLHttpRequest();
+  return new Promise((resolve, reject) =>
+  {
+    req.onreadystatechange = e =>
+    {
+      if (req.readyState == XMLHttpRequest.DONE)
+      {
+        let status = req.status;
+        if (status == 200)
+        {
+          if (req.responseType != "json")
+            resolve(JSON.parse(req.response));
+          else
+            resolve(req.response);
+        }
+        else
+          reject({status, statusText: req.statusText});
+      }
+    };
+    req.open("GET", path);
+    req.send();
+  });
+}
 
+let modes = {};
 let currentMode;
 
 function switchMode(mode)
 {
-  if (currentMode)
-  {
-    currentMode.unmagnify();
-  }
+  if (currentMode) currentMode.unmagnify();
   currentMode = modes[mode];
-  currentMode.activate();
+  if (currentMode) currentMode.activate();
 }
 
 function init()
 {
-  switchMode("screenshots");
+  const dataPath = "data.json";
+
+  loadData(dataPath).then(data =>
+  {
+    modes = {
+      screenshots: new ScreenshotsMode(data),
+      detections: new DetectionsMode(data)
+    };
+    switchMode("screenshots");
+  }).catch(error =>
+  {
+    showError("Can't load " + dataPath + ": " + error.statusText);
+  });
 }
