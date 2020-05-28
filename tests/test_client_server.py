@@ -40,7 +40,7 @@ def get_server_status(webservice):
 
 @pytest.fixture()
 def screenshot_image():
-    return Image.new('RGB', (100, 100), '#123456')
+    return Image.new('RGBA', (100, 100), '#123456')
 
 
 def test_client_server(proxy_detector, screenshot_image, webservice):

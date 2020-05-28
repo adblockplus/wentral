@@ -117,7 +117,8 @@ def dataset_dir(tmpdir_factory):
 
     for i in range(3):
         path = ret.join('{}.png'.format(i))
-        Image.new('RGB', (100, 100), (0, 0, 0)).save(str(path))
+        mode = 'RGB' if i == 0 else 'RGBA'
+        Image.new(mode, (100, 100), (0, 0, 0)).save(str(path))
 
     ret.join('index.csv').write('\n'.join([
         'image,xmin,ymin,xmax,ymax,label',

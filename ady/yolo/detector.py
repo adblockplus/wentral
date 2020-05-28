@@ -181,8 +181,6 @@ class YoloAdDetector(ad.AdDetector):
             iou_threshold = self.iou_threshold
 
         img = image.resize((YOLO_SIZE, YOLO_SIZE))
-        if img.mode == 'RGBA':
-            img = img.convert(mode='RGB')
 
         detections = self._get_detections(img)
         # Discard low confidence detections.

@@ -403,6 +403,8 @@ def match_detections(dataset, detector, **params):
     for image, image_path, expected_boxes in dataset:
         logging.info('Processing image: {}'.format(image_path))
         logging.debug('Marked ads: {}'.format(expected_boxes))
+        if image.mode != 'RGB':
+            image = image.convert('RGB')
         detected_boxes = detector.detect(image, image_path,
                                          confidence_threshold=0.001)
         logging.debug('Detected ads: {}'.format(detected_boxes))

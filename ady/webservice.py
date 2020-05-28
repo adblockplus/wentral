@@ -130,6 +130,8 @@ def make_app(detector):
             image_file = flask.request.files['image']
             image_name = request_data.image_name = image_file.filename
             image = PIL.Image.open(image_file)
+            if image.mode != 'RGB':
+                image = image.convert('RGB')
 
             kw = request_data.params = {}
             for x in ['confidence_threshold', 'iou_threshold']:
