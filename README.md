@@ -160,15 +160,18 @@ JSON file was produced, the JSON file cannot be used as a dataset anymore.
 
 ### Visualizing model performance
 
-You can produce visualizations with detection boxes and ground truth displayed
-on top of the original images. Use `--visualizations-path` (`-z`) option
-followed by the output directory for the visualizations. The directory gets
-populated with images containing the original screenshots with detection and
-ground truth displayed on them as well as an HTML UI for browsing them in
-`index.html` (the UI can be viewed locally with `python -m http.server`, or
-can be hosted at a more serious webserver, or cloud static hosting like Amazon
-S3 or Google Cloud Storage).
+If you add `--visualizations-path` (`-z`) option to `adybm` run, an additional
+visualization folder is generated. The folder will contain `index.html`,
+some JavaScript and JSON and lots of images. The UI can be viewed locally with
+`python -m http.server` or hosted at a more serious webserver, or cloud static
+hosting like Amazon S3 or Google Cloud Storage. Then just point your browser
+to `index.html`.
 
+There are two sections in the visualization UI: screenshots and detections.
+
+#### Screenshots
+
+This section shows full screenshots with detection boxes drawn on top of them.
 The colors of the displayed boxes will be as follows:
 
 - Detection matching a ground truth box (true positive): green,
@@ -177,7 +180,49 @@ The colors of the displayed boxes will be as follows:
 - Ground truth box not matching a detection (false negative): red.
 
 All detections also have their corresponding confidence displayed on top of
-them in %.
+them in %. You can adjust the size of screenshots using the slider at the top,
+or zoom in with a mouse click on the screenshot.
+
+It's possible to filter the screenshots to only see the ones that have false
+positives or false negatives in them.
+
+#### Detections
+
+This section shows detections and ground truth boxes:
+
+- Ground truth boxes that have been detected have a blue frame,
+- Detections matching a ground truth box have a green frame,
+- Detections not matching a ground truth box (false positive) have an orange
+  frame,
+- Undetected ground truth boxes (false negatives) have a red frame.
+
+Similalry to the screenshots view, it's possible to zoom in by clicking on
+detections. The zoom in view also shows the detection or ground truth box in
+context of the screenshot that it comes from.
+
+#### Similarity data
+
+An additional file with detection/ground truth similarity information can be
+placed into the same directory named `nn.json`. It should contain a mapping of
+fragment file names to arrays of mappings with two keys: `file` and `dist` that
+contain file names and distances of similar fragments, for example:
+
+    {
+      "screenshot_42_868,1049-1171,1258.png": [
+        {
+          "file": "screenshot_1337_422,527-1176,616.png",
+          "dist": 0.586823433637619
+        },
+        {
+          "file": "screenshot_18_970,1098-1276,1363.png",
+          "dist": 0.5552344620227814
+        },
+      ]
+    }
+
+When similarity information is provided, similar images are displayed in the
+zoom in view below the full screenshot (for those fragments for which
+similarity is provided).
 
 ## Testing
 

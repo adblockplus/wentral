@@ -42,16 +42,21 @@ function makeElement(tag, params)
   return element;
 }
 
-function showError(message)
+function showMessage(type, message, hideDelay)
 {
-  getById("messages").append(makeElement("div", {
-    className: "error",
+  const messageElement = makeElement("div", {
+    className: type,
     textContent: message,
     onclick()
     {
       this.remove();
     }
-  }));
+  });
+  getById("messages").append(messageElement);
+  if (hideDelay)
+  {
+    setTimeout(() => messageElement.remove(), hideDelay * 1000);
+  }
 }
 
 // Base class for ScreenshotsMode and DetectionsMode.
@@ -223,9 +228,12 @@ class ScreenshotsMode extends Mode
   {
     return this.images.filter(img =>
     {
-      if (this.showAll) return true;
-      if (this.showFP && img.fp > 0) return true;
-      if (this.showFN && img.fn > 0) return true;
+      if (this.showAll)
+        return true;
+      if (this.showFP && img.fp > 0)
+        return true;
+      if (this.showFN && img.fn > 0)
+        return true;
     });
   }
 
@@ -260,13 +268,21 @@ class DetectionsMode extends Mode
     this.name = "detections";
   }
 
+  setSimilars(similars)
+  {
+    this.images.map(image => image.similars = similars[image.name]);
+  }
+
   filterImages()
   {
     return this.images.filter(img =>
     {
-      if (this.showAll) return true;
-      if (this.showFP && img.type == "fd") return true;
-      if (this.showFN && img.type == "mt") return true;
+      if (this.showAll)
+        return true;
+      if (this.showFP && img.type == "fd")
+        return true;
+      if (this.showFN && img.type == "mt")
+        return true;
     });
   }
 
@@ -286,6 +302,17 @@ class DetectionsMode extends Mode
       magnified.appendChild(makeElement("br"));
     }
     magnified.appendChild(makeElement("img", {src: image.origin.name}));
+    if (image.similars)
+    {
+      magnified.appendChild(makeElement("br"));
+      magnified.appendChild(makeElement("h2", {
+        textContent: "Similar fragments"
+      }));
+      image.similars.map(sim =>
+      {
+        magnified.appendChild(makeElement("img", {src: sim.file}));
+      });
+    }
   }
 }
 
@@ -320,24 +347,51 @@ let currentMode;
 
 function switchMode(mode)
 {
-  if (currentMode) currentMode.unmagnify();
+  if (currentMode)
+    currentMode.unmagnify();
   currentMode = modes[mode];
-  if (currentMode) currentMode.activate();
+  if (currentMode)
+    currentMode.activate();
 }
 
-function init()
+async function init()
 {
   const dataPath = "data.json";
+  const nnPath = "nn.json";
 
-  loadData(dataPath).then(data =>
+  try
   {
+    const data = await loadData(dataPath);
     modes = {
       screenshots: new ScreenshotsMode(data),
       detections: new DetectionsMode(data)
     };
     switchMode("screenshots");
-  }).catch(error =>
+  }
+  catch (e)
   {
-    showError("Can't load " + dataPath + ": " + error.statusText);
-  });
+    showMessage("error", "Can't load " + dataPath + ": " + e.statusText);
+  }
+
+  if (modes.detections)
+  {
+    try
+    {
+      const nns = await loadData(nnPath);
+      modes.detections.setSimilars(nns);
+    }
+    catch (e)
+    {
+      if (e.statusText)
+      {
+        showMessage("warning", "Can't load " + nnPath + ": " + e.statusText +
+                    ". Will proceed without similarity data.", 10);
+      }
+      else
+      {
+        showMessage("warning", "Similarity data from " + nnPath +
+                    " has wrong format: " + e, 10);
+      }
+    }
+  }
 }
