@@ -1,26 +1,27 @@
-# This file is part of Ad Detect YOLO <https://adblockplus.org/>,
+# This file is part of Wentral
+# <https://gitlab.com/eyeo/machine-learning/wentral/>,
 # Copyright (C) 2019-present eyeo GmbH
 #
-# Ad Detect YOLO is free software: you can redistribute it and/or modify
+# Wentral is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3 as
 # published by the Free Software Foundation.
 #
-# Ad Detect YOLO is distributed in the hope that it will be useful,
+# Wentral is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with Ad Detect YOLO. If not, see <http://www.gnu.org/licenses/>.
+# along with Wentral. If not, see <http://www.gnu.org/licenses/>.
 
 """Benchmarking tool for ad detection models."""
 
 import argparse
 import logging
 
-import ady.benchmark as bm
-import ady.config as conf
-import ady.dataset as ds
+import wentral.benchmark as bm
+import wentral.config as conf
+import wentral.dataset as ds
 
 RESULTS_TEMPLATE = """Overall results:
 N: {0.image_count}

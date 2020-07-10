@@ -2,11 +2,11 @@ test:
   image: python:3.7
   script:
   - pip install tox
-  - tox -e py37,lint,pinned
+  - tox -e py37,lint
 
 eslint:
   image: "registry.gitlab.com/eyeo/docker/adblockplus-ci:node10"
   script:
   - npm install -g eslint
   - npm install eslint-config-eyeo
-  - eslint ady/vis_ui/visualization.js
+  - eslint wentral/vis_ui/visualization.js

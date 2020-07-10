@@ -1,23 +1,24 @@
-# This file is part of Ad Detect YOLO <https://adblockplus.org/>,
-# Copyright (C) 2019 eyeo GmbH
+# This file is part of Wentral
+# <https://gitlab.com/eyeo/machine-learning/wentral/>,
+# Copyright (C) 2019-present eyeo GmbH
 #
-# Ad Detect YOLO is free software: you can redistribute it and/or modify
+# Wentral is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3 as
 # published by the Free Software Foundation.
 #
-# Ad Detect YOLO is distributed in the hope that it will be useful,
+# Wentral is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with Ad Detect YOLO. If not, see <http://www.gnu.org/licenses/>.
+# along with Wentral. If not, see <http://www.gnu.org/licenses/>.
 
 """Tests for the benchmarking code."""
 
 import pytest
 
-import ady.benchmark as bm
+import wentral.benchmark as bm
 
 
 # Data for PRC, IPRC and mAP tests.
@@ -98,7 +99,7 @@ def test_ap():
     ([(0.999, False), (0.999, False)], [1, 2], 0),   # None detected.
 ])
 def test_ap_all_1(detections, ground_truth, expect_ap):
-    """Test AP with everything detected at c=1.0 (happens with adybm -r)."""
+    """Test AP with everything detected at c=1.0 (happens with wentral."""
     ap = bm.average_precision(detections, ground_truth)
     assert ap == expect_ap
 

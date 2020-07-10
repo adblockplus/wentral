@@ -1,7 +1,7 @@
-# Ad Detect YOLO
+# Wentral
 
-This repository contains a web service that detects ads on screenshots using
-YOLO v.3 object detection model.
+A frontend for ad detecting machine learning models. Provides benchmarking and
+web service tools.
 
 ## Installation
 
@@ -13,31 +13,24 @@ guaranteed to work, instead of the latests ones, you can run
 `pip install -r requirements.txt` before running the command from previous
 paragraph.
 
-## Configuration
-
-This repository doesn't contain the weights file for the model. It can be
-obtained from [releases page][1] of Ad-Versarial [repository][2] (download
-`models.tar.gz` and take `page_based_yolov3.weights` from it. You can also
-train from scratch and save your own weights (recommended).
-
 ## Running the web service
 
 With the virtualenv activated the web server can be started with:
 
-    $ adyws -w weights_file [--port port]
+    $ wws -d MODEL_CLASS -w WEIGHTS_FILE [--port port]
 
 It will listen on specified port (8080 by default), and you can interact with
 it by pointing your browser to `http://localhost:8080/` or programmatically.
-See `adyws -h` for description of additional options.
+See `wws -h` for description of additional options.
 
 Instead of providing `-w` option, you can set `YOLOv3_WEIGHTS_PATH` environment
 variable to the path of the weights file. **This is supported for backward
 compatibility but is deprecated and at some point `-w` will become mandatory**.
 
-Client code for Python is provided in `ady.client`:
+Client code for Python is provided in `wentral.client`:
 
     from PIL import Image
-    import ady.client as cl
+    import wentral.client as cl
 
     detector = cl.ProxyAdDetector('http://localhost:8080/')
     path = 'path/image.png'
@@ -62,7 +55,7 @@ the detection process:
   overlaps are necessary to make sure the ads at slice boundaries get detected
   (default: 0.2).
 
-The defaults can be changed by supplying the options to `adyws` (see `adyws -h`
+The defaults can be changed by supplying the options to `wws` (see `wws -h`
 for more info).
 
 There's also a GET endpoint for requesting server status at
@@ -70,13 +63,13 @@ There's also a GET endpoint for requesting server status at
 information about server memory consumption and current active detection
 requests (including their parameters).
 
-### Using alternative ad detectors with `adyws`
+### Using alternative ad detectors with `wws`
 
 Supply `--detector`/`-d` parameter with a fully qualified name of another
 detector implementation (e.g. `some.other.AdDetector`) and provide
 `--weights-file`/`-w` option, e.g.:
 
-    $ adyws -d my.other.FancyAdDetector -w fancy.weights
+    $ wws -d my.other.FancyAdDetector -w fancy.weights
 
 ## Running the measurement script
 
@@ -95,10 +88,10 @@ JSON output via `--output` or `-o`.
 
 Set `--detector` to `server` and provide `--server-url` option:
 
-    $ adybm -d server -s http://localhost:8080/ dataset_path
+    $ wbm -d server -s http://localhost:8080/ dataset_path
 
 This will upload image to `localhost:8080` expecting replies in the same format
-as what `adyws` returns.
+as what `wws` returns.
 
 ### Usage with YOLO or other object detection model and weights file
 
@@ -106,12 +99,12 @@ Set `--detector` to `yolo` or fully qualified name of another detector
 implementation (e.g. `some.other.AdDetector`) and provide `--weights-file`
 option:
 
-    $ adybm -d yolo -w yolo_v3.weights dataset_path
+    $ wbm -d yolo -w yolo_v3.weights dataset_path
 
 This will load model weights from `yolo_v3.weights` and then use the resulting
 model.
 
-    $ adybm -d some.other.AdDetector -w other.weights dataset_path
+    $ wbm -d some.other.AdDetector -w other.weights dataset_path
 
 This will import `AdDetector` from `some.other` module and instantiate it with
 `weights_file="other.weights"` (the values of `--confidence-threshold` and
@@ -122,7 +115,7 @@ arguments.
 
 Set `--detector` to `static` and provide `--path` option:
 
-    $ adybm -d static -p another_dataset dataset_path
+    $ wbm -d static -p another_dataset dataset_path
 
 This will take marked regions of `another_dataset` as detections and measure
 this against `dataset_path` as the ground truth. It's important that the former
@@ -130,14 +123,14 @@ contain region marking for all images in the latter. Otherwise it's not
 possible to produce detections for the missing images and to avoid giving out
 misguiding results this is considered an error.
 
-### Usage with JSON output of another adybm run
+### Usage with JSON output of another wbm run
 
 Sometimes it could be useful to re-use the detections from another run. It can
 be to try different values of confidence threshold or IoU threshold or to
 produce visualizations. There's a built-in detector implementation that does
 this:
 
-    $ adybm -d json -p previous-run.json dataset_path
+    $ wbm -d json -p previous-run.json dataset_path
 
 This will load detections from `previous-run.json` (that was produced using
 `--output` option). Different confidence and IoU thresholds can be applied to
@@ -152,7 +145,7 @@ In addition to using JSON output as a source of detections, it can also be used
 as the source of the ground truth. In order to do it, give the JSON file as the
 dataset parameter:
 
-    $ adybm -d yolo -w yolo.weights previous-run.json
+    $ wbm -d yolo -w yolo.weights previous-run.json
 
 Note: The JSON file contains the path to the original images, but it doesn't 
 contain the images themselves. If the images are not where they were when the
@@ -160,7 +153,7 @@ JSON file was produced, the JSON file cannot be used as a dataset anymore.
 
 ### Visualizing model performance
 
-If you add `--visualizations-path` (`-z`) option to `adybm` run, an additional
+If you add `--visualizations-path` (`-z`) option to `wbm` run, an additional
 visualization folder is generated. The folder will contain `index.html`,
 some JavaScript and JSON and lots of images. The UI can be viewed locally with
 `python -m http.server` or hosted at a more serious webserver, or cloud static
@@ -243,7 +236,7 @@ tests, but you can lint it using [ESLint][5] (more info on eyeo eslint config
 
 and then run:
 
-    $ eslint ady/vis_ui/visualization.js
+    $ eslint wentral/vis_ui/visualization.js
 
 You only need to do it if you changed that file of course.
 

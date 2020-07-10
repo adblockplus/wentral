@@ -1,33 +1,31 @@
-# This file is part of Ad Detect YOLO <https://adblockplus.org/>,
+# This file is part of Wentral
+# <https://gitlab.com/eyeo/machine-learning/wentral/>,
 # Copyright (C) 2019-present eyeo GmbH
 #
-# Ad Detect YOLO is free software: you can redistribute it and/or modify
+# Wentral is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3 as
 # published by the Free Software Foundation.
 #
-# Ad Detect YOLO is distributed in the hope that it will be useful,
+# Wentral is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with Ad Detect YOLO. If not, see <http://www.gnu.org/licenses/>.
+# along with Wentral. If not, see <http://www.gnu.org/licenses/>.
 
 """Common configuration and detector loading."""
 
 import importlib
 import logging
 
-import ady.utils as utils
+import wentral.utils as utils
 
 DETECTOR_SHORTCUTS = {
-    'json': 'ady.json_detector.JsonDetector',
-    'server': 'ady.client.ProxyAdDetector',
-    'static': 'ady.static_detector.StaticDetector',
-    'yolo': 'ady.yolo.detector.YoloAdDetector',
+    'json': 'wentral.json_detector.JsonDetector',
+    'server': 'wentral.client.ProxyAdDetector',
+    'static': 'wentral.static_detector.StaticDetector',
 }
-
-DEFAULT_DETECTOR = 'yolo'
 
 # Logging levels set by zero, one or two -v flags.
 LOGLEVELS = {
@@ -47,9 +45,9 @@ def add_detector_args(parser):
 
     """
     parser.add_argument(
-        '--detector', '-d', metavar='CLASS', default=DEFAULT_DETECTOR,
-        help='Detector class (full name or shortcut: yolo, server, static, '
-             'json; default: yolo)',
+        '--detector', '-d', metavar='CLASS',
+        help='Detector class (full name or shortcut, e.g. server, static, '
+             'json, wentral.client.ProxyAdDetector)',
     )
     parser.add_argument(
         '--confidence-threshold', '-c', metavar='X', type=float, default=0.5,
@@ -65,8 +63,7 @@ def add_detector_args(parser):
     )
     parser.add_argument(
         '--weights-file', '-w', metavar='PATH',
-        help='Path to model weights file (use with -d yolo and other neural '
-             'networks)',
+        help='Path to model weights file (use with neural network detectors)',
     )
     parser.add_argument(
         '--path', '-p', metavar='PATH',

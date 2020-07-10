@@ -1,17 +1,18 @@
-# This file is part of Ad Detect YOLO <https://adblockplus.org/>,
+# This file is part of Wentral
+# <https://gitlab.com/eyeo/machine-learning/wentral/>,
 # Copyright (C) 2019-present eyeo GmbH
 #
-# Ad Detect YOLO is free software: you can redistribute it and/or modify
+# Wentral is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3 as
 # published by the Free Software Foundation.
 #
-# Ad Detect YOLO is distributed in the hope that it will be useful,
+# Wentral is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with Ad Detect YOLO. If not, see <http://www.gnu.org/licenses/>.
+# along with Wentral. If not, see <http://www.gnu.org/licenses/>.
 
 """Common testing bits."""
 
@@ -23,9 +24,9 @@ import pytest
 import wsgi_intercept as icpt
 from wsgi_intercept import requests_intercept
 
-import ady.webservice as ws
-import ady.benchmark as bm
-import ady.dataset as ds
+import wentral.webservice as ws
+import wentral.benchmark as bm
+import wentral.dataset as ds
 
 
 class MockAdDetector:
@@ -91,8 +92,8 @@ def webservice(mock_detector):
 
 @pytest.fixture()
 def shmetector(mocker, mock_detector):
-    """Mock detector that can be imported into adybm and adyws with -d."""
-    fqn = 'ady.Shmetector'
+    """Mock detector that can be imported into wbm and wws with -d."""
+    fqn = 'wentral.Shmetector'
 
     def construct_detector(weights_file, iou_threshold=0.5, missing=None,
                            extra_one=None, extra_two=None):

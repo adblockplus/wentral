@@ -1,2 +1,2 @@
-include ady/vis_ui/index.html
-include ady/vis_ui/visualization.js
+include wentral/vis_ui/index.html
+include wentral/vis_ui/visualization.js

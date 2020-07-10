@@ -1,25 +1,26 @@
-# This file is part of Ad Detect YOLO <https://adblockplus.org/>,
-# Copyright (C) 2019 eyeo GmbH
+# This file is part of Wentral
+# <https://gitlab.com/eyeo/machine-learning/wentral/>,
+# Copyright (C) 2019-present eyeo GmbH
 #
-# Ad Detect YOLO is free software: you can redistribute it and/or modify
+# Wentral is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3 as
 # published by the Free Software Foundation.
 #
-# Ad Detect YOLO is distributed in the hope that it will be useful,
+# Wentral is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with Ad Detect YOLO. If not, see <http://www.gnu.org/licenses/>.
+# along with Wentral. If not, see <http://www.gnu.org/licenses/>.
 
 """Tests for slicing detection proxy."""
 
 from PIL import Image
 import pytest
 
-import ady.slicing_detector_proxy as sdp
-import ady.utils as utils
+import wentral.slicing_detector_proxy as sdp
+import wentral.utils as utils
 
 import conftest
 

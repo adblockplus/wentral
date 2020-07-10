@@ -1,17 +1,18 @@
-# This file is part of Ad Detect YOLO <https://adblockplus.org/>,
+# This file is part of Wentral
+# <https://gitlab.com/eyeo/machine-learning/wentral/>,
 # Copyright (C) 2019-present eyeo GmbH
 #
-# Ad Detect YOLO is free software: you can redistribute it and/or modify
+# Wentral is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3 as
 # published by the Free Software Foundation.
 #
-# Ad Detect YOLO is distributed in the hope that it will be useful,
+# Wentral is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with Ad Detect YOLO. If not, see <http://www.gnu.org/licenses/>.
+# along with Wentral. If not, see <http://www.gnu.org/licenses/>.
 
 """Test for the benchmarking CLI."""
 
@@ -34,7 +35,7 @@ mAP: 75.00%
 def test_server(script_runner, dataset_dir, webservice):
     """Test with -d server and --server-url."""
     result = script_runner.run(
-        'adybm',
+        'wbm',
         '-d', 'server',
         '-s', webservice['url'],
         str(dataset_dir),
@@ -52,9 +53,9 @@ def test_server(script_runner, dataset_dir, webservice):
     ['--extra', 'extra_one=foo', '-x', 'extra_two=bar'],
 ])
 def test_other(script_runner, shmetector, dataset_dir, weights_file, extras):
-    """Test with -d ady.Shmetector (that requires weights_file)."""
+    """Test with -d wentral.Shmetector (that requires weights_file)."""
     cmd = [
-        'adybm',
+        'wbm',
         '-d', shmetector,
         str(dataset_dir),
     ] + extras
@@ -80,14 +81,14 @@ def test_other(script_runner, shmetector, dataset_dir, weights_file, extras):
         # There's no default for --weights-file provided by the options parser
         # and no default coming from the constructor so this should fail.
         assert not result.success
-        err = 'Parameter weights_file is required for detector ady.Shmetector'
+        err = 'weights_file is required for detector wentral.Shmetector'
         assert err in result.stderr
 
 
 def test_static(script_runner, dataset_dir):
     """Test with -d static and --path."""
     result = script_runner.run(
-        'adybm',
+        'wbm',
         '-d', 'static',
         '-p', str(dataset_dir),
         str(dataset_dir),
@@ -118,7 +119,7 @@ def test_static_missing(script_runner, dataset_dir, dataset_copy):
     dataset_copy.join('index.csv').write('')
 
     result = script_runner.run(
-        'adybm',
+        'wbm',
         '-d', 'static',
         '-p', str(dataset_copy),
         str(dataset_dir),
@@ -132,7 +133,7 @@ def test_json_output(script_runner, dataset_dir, tmpdir, webservice):
     """Test JSON output."""
     json_path = tmpdir.join('output.json')
     result = script_runner.run(
-        'adybm',
+        'wbm',
         '-d', 'server',
         '-o', str(json_path),
         '-s', webservice['url'],
@@ -156,7 +157,7 @@ def test_json_output(script_runner, dataset_dir, tmpdir, webservice):
 def test_json_detector(script_runner, dataset_dir, json_output, extra_args):
     """Test -d json and loading ground truth from the same JSON file."""
     cmd = [
-        'adybm',
+        'wbm',
         '-d', 'json',
         '-p', str(json_output),
         str(dataset_dir),
@@ -181,7 +182,7 @@ def test_json_dataset(script_runner, webservice, json_output, tmpdir):
     """Test loading the dataset from a JSON file."""
     json_output2 = tmpdir.join('output2.json')
     result = script_runner.run(
-        'adybm',
+        'wbm',
         '-d', 'server',
         '-s', webservice['url'],
         '-o', str(json_output2),
@@ -193,7 +194,7 @@ def test_json_dataset(script_runner, webservice, json_output, tmpdir):
 
     # Do it again with the output of the run above.
     result = script_runner.run(
-        'adybm',
+        'wbm',
         '-d', 'server',
         '-s', webservice['url'],
         str(json_output2),
@@ -207,7 +208,7 @@ def test_json_dataset(script_runner, webservice, json_output, tmpdir):
 def test_iou(script_runner, dataset_dir, webservice):
     """Test changing the IoU."""
     result = script_runner.run(
-        'adybm',
+        'wbm',
         '-d', 'server',
         '-s', webservice['url'],
         '-m', '0.1',
@@ -256,7 +257,7 @@ def test_visualize_out_files(script_runner, dataset_dir, tmpdir, webservice):
     vis_dir = tmpdir.join('vis_dir')
 
     result = script_runner.run(
-        'adybm',
+        'wbm',
         '-d', 'server',
         '-s', webservice['url'],
         '-z', str(vis_dir),

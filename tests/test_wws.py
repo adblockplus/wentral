@@ -1,17 +1,18 @@
-# This file is part of Ad Detect YOLO <https://adblockplus.org/>,
+# This file is part of Wentral
+# <https://gitlab.com/eyeo/machine-learning/wentral/>,
 # Copyright (C) 2019-present eyeo GmbH
 #
-# Ad Detect YOLO is free software: you can redistribute it and/or modify
+# Wentral is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 3 as
 # published by the Free Software Foundation.
 #
-# Ad Detect YOLO is distributed in the hope that it will be useful,
+# Wentral is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with Ad Detect YOLO. If not, see <http://www.gnu.org/licenses/>.
+# along with Wentral. If not, see <http://www.gnu.org/licenses/>.
 
 """Tests for the ad detector web service CLI."""
 
@@ -27,9 +28,9 @@ import pytest
 ])
 def test_other(script_runner, mocker, shmetector, dataset_dir, weights_file,
                via_env, extras):
-    """Test with -d ady.Shmetector (that requires weights_file)."""
+    """Test with -d wentral.Shmetector (that requires weights_file)."""
     cmd = [
-        'adyws',
+        'wws',
         '-d', shmetector,
     ] + extras
     kwargs = {}
@@ -74,5 +75,5 @@ def test_other(script_runner, mocker, shmetector, dataset_dir, weights_file,
         # There's no default for --weights-file provided by the options parser
         # and no default coming from the constructor so this should fail.
         assert not result.success
-        err = 'Parameter weights_file is required for detector ady.Shmetector'
+        err = 'weights_file is required for detector wentral.Shmetector'
         assert err in result.stderr
