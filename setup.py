@@ -53,7 +53,7 @@ setup(
         'waitress',
         'admincer',
     ],
-    license='GPLv3',
+    license='MIT',
     zip_safe=False,
     keywords='object detection, web',
     classifiers=[
