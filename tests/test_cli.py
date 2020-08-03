@@ -275,3 +275,59 @@ def test_visualize_out_files(script_runner, dataset_dir, tmpdir, webservice):
     # We don't check that the boxes are drawn and extracted correctly and that
     # the data in data.js is right. The tests in test_visualization.py check
     # that and we trust that this is enough.
+
+
+@pytest.mark.script_launch_mode('inprocess')
+@pytest.mark.parametrize('weights_file', [None, '/a/b/c'])
+@pytest.mark.parametrize('extras', [
+    [],
+    ['--slicing-threshold', '0.5', '--iou-threshold', '0.2', '--port', '80'],
+])
+def test_wws(script_runner, mocker, shmetector, dataset_dir, weights_file,
+             extras):
+    """Test with -d wentral.Shmetector (that requires weights_file)."""
+    cmd = [
+        'wentral', 'ws',
+        '-d', shmetector,
+    ] + extras
+    kwargs = {}
+
+    if weights_file is not None:
+        cmd[4:4] = ['-w', weights_file]
+
+    def mock_serve(app, port=None):
+        """Mock for waitress.serve() that prints out the arguments."""
+        app = app.application  # Unwrap from TransLogger.
+        print(app.detector)
+        print('port={}'.format(port))
+
+    mocker.patch('waitress.serve', mock_serve)
+
+    result = script_runner.run(*cmd, **kwargs)
+    if weights_file is not None:
+        assert result.success
+
+        # Our mock of `waitress.server` prints the objects and their settings
+        # to stdout. Check that it looks right.
+        args = {
+            opt: value
+            for opt, value in zip(extras, extras[1:])
+            if opt.startswith('-')
+        }
+        slicing_threshold = args.get('--slicing-threshold', 0.7)
+        iou_threshold = args.get('--iou-threshold', 0.4)
+        port = args.get('--port', 8080)
+
+        assert result.stdout == (
+            'SlicingDetectorProxy(detector=MD(weights_file={}, '
+            'iou_threshold={}), iou_threshold={}, slice_overlap=0.2, '
+            'slicing_threshold={})\nport={}\n'
+        ).format(weights_file, iou_threshold, iou_threshold,
+                 slicing_threshold, port)
+        assert result.stderr == ''
+    else:
+        # There's no default for --weights-file provided by the options parser
+        # and no default coming from the constructor so this should fail.
+        assert not result.success
+        err = 'weights_file is required for detector wentral.Shmetector'
+        assert err in result.stderr

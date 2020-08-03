@@ -24,9 +24,15 @@ import argparse
 import logging
 import sys
 
+import paste.translogger as tl
+import waitress
+
 import wentral.benchmark as bm
 import wentral.config as conf
 import wentral.dataset as ds
+import wentral.slicing_detector_proxy as sdp
+import wentral.utils as utils
+import wentral.webservice as ws
 
 parser = argparse.ArgumentParser(description=__doc__)
 subparsers = parser.add_subparsers(help='sub-command help')
@@ -185,6 +191,36 @@ def benchmark(args):
     if args.output:
         with open(args.output, 'wt', encoding='utf-8') as out_file:
             evaluation.json_dump(out_file)
+
+
+@command(aliases=['ws'])
+@common_args()
+@arg(
+    '--verbose', '-v', action='count', default=0,
+    help='Increase the amount of debug output',
+)
+@arg(
+    '--port', type=int, default=8080, metavar='N',
+    help='Port to listen on (default: 8080)',
+)
+@arg(
+    '--slicing-threshold', type=float, default=0.7, metavar='X',
+    help='Aspect ratio beyond which the input image will be divided into '
+         'square slices (default: 0.7)',
+)
+@arg(
+    '--slice-overlap', type=float, default=0.2, metavar='X',
+    help='Overlap ratio for slices of non-square images (default: 0.2)',
+)
+def webserve(args):
+    """Make the detector available as an HTTP web service."""
+    detector = conf.make_detector(args)
+    kw = utils.kwargs_from_ns(sdp.SlicingDetectorProxy, args)
+    del kw['detector']
+    slicing_proxy = sdp.SlicingDetectorProxy(detector, **kw)
+    app = ws.make_app(slicing_proxy)
+    lapp = tl.TransLogger(app, setup_console_handler=False)
+    waitress.serve(lapp, port=args.port)
 
 
 # Logging levels set by zero, one or two -v flags.
