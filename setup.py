@@ -38,10 +38,7 @@ setup(
     url='https://gitlab.com/eyeo/sandbox/ad-detect-yolo',
     packages=['wentral'],
     entry_points={
-        'console_scripts': [
-            'wws=wentral.wws:main',
-            'wbm=wentral.wbm:main',
-        ],
+        'console_scripts': ['wentral=wentral.__main__:main'],
     },
     include_package_data=True,
     install_requires=[
