@@ -13,19 +13,15 @@ guaranteed to work, instead of the latests ones, you can run
 `pip install -r requirements.txt` before running the command from previous
 paragraph.
 
-## Running the web service
+## Web service
 
 With the virtualenv activated the web server can be started with:
 
-    $ wws -d MODEL_CLASS -w WEIGHTS_FILE [--port port]
+    $ wentral ws -d MODEL_CLASS -w WEIGHTS_FILE [--port port]
 
 It will listen on specified port (8080 by default), and you can interact with
 it by pointing your browser to `http://localhost:8080/` or programmatically.
 See `wws -h` for description of additional options.
-
-Instead of providing `-w` option, you can set `YOLOv3_WEIGHTS_PATH` environment
-variable to the path of the weights file. **This is supported for backward
-compatibility but is deprecated and at some point `-w` will become mandatory**.
 
 Client code for Python is provided in `wentral.client`:
 
@@ -55,32 +51,34 @@ the detection process:
   overlaps are necessary to make sure the ads at slice boundaries get detected
   (default: 0.2).
 
-The defaults can be changed by supplying the options to `wws` (see `wws -h`
-for more info).
+The defaults can be changed by supplying the options to `wentral ws` (see
+`wentral ws -h` for more info).
 
 There's also a GET endpoint for requesting server status at
 `http://localhost:8080/status`. It returns a JSON document that contains the
 information about server memory consumption and current active detection
 requests (including their parameters).
 
-### Using alternative ad detectors with `wws`
+### Using alternative ad detectors with `wentral ws`
 
 Supply `--detector`/`-d` parameter with a fully qualified name of another
 detector implementation (e.g. `some.other.AdDetector`) and provide
 `--weights-file`/`-w` option, e.g.:
 
-    $ wws -d my.other.FancyAdDetector -w fancy.weights
+    $ wentral ws -d my.other.FancyAdDetector -w fancy.weights
 
-## Running the measurement script
+## Benchmarks
 
-There's also a script that measures ad detection performance. It can work with
-a web service, model weights or a directory that contains marked screenshots.
+`benchmark` (or `bm`) command measures ad detection performance. It can work
+with the web service, model weights or a directory that contains marked
+screenshots. You can also use detections from a previous run saved in a JSON
+file (see below).
 
-The script will load the images from `dataset_path`. It will also load the
-ground truth from a `.csv` file in the same directory or from `.txt` files (in
-YOLOv3 format) that have the same names as the images.
+Wentral will load the images from `dataset_path`. It will also load the ground
+truth from a `.csv` file in the same directory or from `.txt` files (in YOLOv3
+format) that have the same names as the images.
 
-The script outputs overall statistics to standard output. You can request
+Benchmark runs output overall statistics to standard output. You can request
 numbers on individual images using `--verbose` or `-v` and/or more detailed
 JSON output via `--output` or `-o`.
 
@@ -88,10 +86,10 @@ JSON output via `--output` or `-o`.
 
 Set `--detector` to `server` and provide `--server-url` option:
 
-    $ wbm -d server -s http://localhost:8080/ dataset_path
+    $ wentral bm -d server -s http://localhost:8080/ dataset_path
 
 This will upload image to `localhost:8080` expecting replies in the same format
-as what `wws` returns.
+as what `wentral ws` returns.
 
 ### Usage with YOLO or other object detection model and weights file
 
@@ -99,12 +97,12 @@ Set `--detector` to `yolo` or fully qualified name of another detector
 implementation (e.g. `some.other.AdDetector`) and provide `--weights-file`
 option:
 
-    $ wbm -d yolo -w yolo_v3.weights dataset_path
+    $ wentral bm -d yolo -w yolo_v3.weights dataset_path
 
 This will load model weights from `yolo_v3.weights` and then use the resulting
 model.
 
-    $ wbm -d some.other.AdDetector -w other.weights dataset_path
+    $ wentral bm -d some.other.AdDetector -w other.weights dataset_path
 
 This will import `AdDetector` from `some.other` module and instantiate it with
 `weights_file="other.weights"` (the values of `--confidence-threshold` and
@@ -115,7 +113,7 @@ arguments.
 
 Set `--detector` to `static` and provide `--path` option:
 
-    $ wbm -d static -p another_dataset dataset_path
+    $ wentral bm -d static -p another_dataset dataset_path
 
 This will take marked regions of `another_dataset` as detections and measure
 this against `dataset_path` as the ground truth. It's important that the former
@@ -123,14 +121,14 @@ contain region marking for all images in the latter. Otherwise it's not
 possible to produce detections for the missing images and to avoid giving out
 misguiding results this is considered an error.
 
-### Usage with JSON output of another wbm run
+### Usage with JSON output of another benchmark run
 
 Sometimes it could be useful to re-use the detections from another run. It can
 be to try different values of confidence threshold or IoU threshold or to
 produce visualizations. There's a built-in detector implementation that does
 this:
 
-    $ wbm -d json -p previous-run.json dataset_path
+    $ wentral bm -d json -p previous-run.json dataset_path
 
 This will load detections from `previous-run.json` (that was produced using
 `--output` option). Different confidence and IoU thresholds can be applied to
@@ -145,7 +143,7 @@ In addition to using JSON output as a source of detections, it can also be used
 as the source of the ground truth. In order to do it, give the JSON file as the
 dataset parameter:
 
-    $ wbm -d yolo -w yolo.weights previous-run.json
+    $ wentral bm -d yolo -w yolo.weights previous-run.json
 
 Note: The JSON file contains the path to the original images, but it doesn't 
 contain the images themselves. If the images are not where they were when the
@@ -153,12 +151,12 @@ JSON file was produced, the JSON file cannot be used as a dataset anymore.
 
 ### Visualizing model performance
 
-If you add `--visualizations-path` (`-z`) option to `wbm` run, an additional
-visualization folder is generated. The folder will contain `index.html`,
-some JavaScript and JSON and lots of images. The UI can be viewed locally with
-`python -m http.server` or hosted at a more serious webserver, or cloud static
-hosting like Amazon S3 or Google Cloud Storage. Then just point your browser
-to `index.html`.
+If you add `--visualizations-path` (`-z`) option to benchmark run, an
+additional visualization folder is generated. The folder will contain
+`index.html`, some JavaScript and JSON and lots of images. The UI can be viewed
+locally with `python -m http.server` or hosted at a more serious webserver, or
+cloud static hosting like Amazon S3 or Google Cloud Storage. Then just point
+your browser to `index.html`.
 
 There are two sections in the visualization UI: screenshots and detections.
 
@@ -238,15 +236,7 @@ and then run:
 
     $ eslint wentral/vis_ui/visualization.js
 
-You only need to do it if you changed that file of course.
-
-### Pinned dependencies
-
-There's a special Tox environment that makes sure that `python setup.py
-install` doesn't override any fixed dependencies from `requirements.txt`. It
-can be invoked by `tox -e pinned`. This environment is included in the CI setup
-(see below), so conflicts between `requirements.txt` and `setup.py` dependency
-versions are considered a fatal error.
+You only need to do it if you changed that file.
 
 ### CI
 
