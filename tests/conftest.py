@@ -28,12 +28,13 @@ import pytest
 import wsgi_intercept as icpt
 from wsgi_intercept import requests_intercept
 
+import wentral.ad_detector as ad
 import wentral.webservice as ws
 import wentral.benchmark as bm
 import wentral.dataset as ds
 
 
-class MockAdDetector:
+class MockAdDetector(ad.AdDetector):
     """Ad detector that returns prepared answers."""
 
     name = 'mock-detector'

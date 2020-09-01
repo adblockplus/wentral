@@ -239,14 +239,20 @@ class SlicingDetectorProxy(ad.AdDetector):
             slicing_threshold,
             slice_overlap,
         )
-        slice_detections = [
-            self.detector.detect(
+        slices = [
+            (
                 image.crop(box),
                 '{0}_{1[0]},{1[1]}-{1[2]},{1[3]}'.format(path, box),
+            )
+            for box in slice_boxes
+        ]
+        slice_detections = [
+            detections
+            for path, detections in self.detector.batch_detect(
+                slices,
                 confidence_threshold=confidence_threshold,
                 iou_threshold=iou_threshold,
             )
-            for box in slice_boxes
         ]
 
         return self._combine_slice_detections(
