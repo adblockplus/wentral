@@ -85,7 +85,7 @@ def test_other(script_runner, shmetector, dataset_dir, weights_file, extras):
         # There's no default for --weights-file provided by the options parser
         # and no default coming from the constructor so this should fail.
         assert not result.success
-        err = 'weights_file is required for detector wentral.Shmetector'
+        err = 'weights_file is required for detector'
         assert err in result.stderr
 
 
@@ -282,9 +282,10 @@ def test_visualize_out_files(script_runner, dataset_dir, tmpdir, webservice):
 @pytest.mark.parametrize('extras', [
     [],
     ['--slicing-threshold', '0.5', '--iou-threshold', '0.2', '--port', '80'],
+    ['-x', 'missing=foo'],  # Pass extra parameters to inner detector.
 ])
-def test_wws(script_runner, mocker, shmetector, dataset_dir, weights_file,
-             extras):
+def test_ws(script_runner, mocker, shmetector, dataset_dir, weights_file,
+            extras):
     """Test with -d wentral.Shmetector (that requires weights_file)."""
     cmd = [
         'wentral', 'ws',
@@ -329,5 +330,5 @@ def test_wws(script_runner, mocker, shmetector, dataset_dir, weights_file,
         # There's no default for --weights-file provided by the options parser
         # and no default coming from the constructor so this should fail.
         assert not result.success
-        err = 'weights_file is required for detector wentral.Shmetector'
+        err = 'weights_file is required for detector'
         assert err in result.stderr

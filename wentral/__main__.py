@@ -215,9 +215,11 @@ def benchmark(args):
 def webserve(args):
     """Make the detector available as an HTTP web service."""
     detector = conf.make_detector(args)
+    # Remove/change arguments that are only relevant for the main detector.
+    args.detector = detector
+    args.extra = []
     kw = utils.kwargs_from_ns(sdp.SlicingDetectorProxy, args)
-    del kw['detector']
-    slicing_proxy = sdp.SlicingDetectorProxy(detector, **kw)
+    slicing_proxy = sdp.SlicingDetectorProxy(**kw)
     app = ws.make_app(slicing_proxy)
     lapp = tl.TransLogger(app, setup_console_handler=False)
     waitress.serve(lapp, port=args.port)

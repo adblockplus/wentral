@@ -87,8 +87,10 @@ def kwargs_from_ns(func, args):
             # Skip varargs (*args, **kwargs).
             continue
         elif v.default == v.empty:
+            t = str(func).split("'")
+            func_name = t[1] if len(t) == 3 else func
             raise Exception('Parameter {} is required for detector {}'
-                            .format(k, args.detector))
+                            .format(k, func_name))
     for extra in getattr(args, 'extra', []):
         try:
             name, value = extra.split('=')
