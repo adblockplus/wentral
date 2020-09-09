@@ -82,6 +82,10 @@ def kwargs_from_ns(func, args):
     for k, v in signature.parameters.items():
         if getattr(args, k, None) is not None:
             params[k] = getattr(args, k)
+        elif v.kind in {inspect.Parameter.VAR_KEYWORD,
+                        inspect.Parameter.VAR_POSITIONAL}:
+            # Skip varargs (*args, **kwargs).
+            continue
         elif v.default == v.empty:
             raise Exception('Parameter {} is required for detector {}'
                             .format(k, args.detector))
