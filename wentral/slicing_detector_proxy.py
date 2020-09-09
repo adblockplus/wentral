@@ -202,7 +202,8 @@ class SlicingDetectorProxy(ad.AdDetector):
         return all_detections + last_detections
 
     def detect(self, image, path, confidence_threshold=None,
-               iou_threshold=None, slicing_threshold=None, slice_overlap=None):
+               iou_threshold=None, slicing_threshold=None, slice_overlap=None,
+               **kw):
         """Detect ads using wrapped detector and slicing as necessary.
 
         Parameters
@@ -227,8 +228,14 @@ class SlicingDetectorProxy(ad.AdDetector):
             Detected ad boxes.
 
         """
+        if confidence_threshold is not None:
+            kw['confidence_threshold'] = confidence_threshold
+
         if iou_threshold is None:
             iou_threshold = self.iou_threshold
+        else:
+            kw['iou_threshold'] = iou_threshold
+
         if slicing_threshold is None:
             slicing_threshold = self.slicing_threshold
         if slice_overlap is None:
@@ -246,14 +253,8 @@ class SlicingDetectorProxy(ad.AdDetector):
             )
             for box in slice_boxes
         ]
-        slice_detections = [
-            detections
-            for path, detections in self.detector.batch_detect(
-                slices,
-                confidence_threshold=confidence_threshold,
-                iou_threshold=iou_threshold,
-            )
-        ]
+        slice_detections_dict = dict(self.detector.batch_detect(slices, **kw))
+        slice_detections = [slice_detections_dict[name] for _, name in slices]
 
         return self._combine_slice_detections(
             slice_boxes=slice_boxes,

@@ -22,6 +22,7 @@
 
 from PIL import Image
 import pytest
+from unittest import mock
 
 import wentral.slicing_detector_proxy as sdp
 import wentral.utils as utils
@@ -82,6 +83,8 @@ D1_1221 = (3, 5, 15, 23, 0.9)  # D1 + D12 + D21 + D22
 
 
 @pytest.mark.parametrize('box1,dets1,box2,dets2,iou_threshold,expected', [
+    # No detections.
+    (BOX1, [], BOX2, [], 0.5, []),
     # Non-overlapping boxes.
     (BOX1, [D1], BOX31, [D3], 0.5, [D1, D3]),
     # Overlap over a zero-area rectangle.
@@ -190,3 +193,47 @@ def test_slicing_detection_proxy(slice_detections, iou_threshold, expect):
                                      slice_overlap=0.5)
     got = proxy.detect(image, 'foo')
     assert set(expect) == set(got)
+
+
+def test_slicing_detection_proxy_argument_passthrough():
+    """Test that arguments of `detect()` are passed through correctly:
+
+    - iou_threshold should not be passed through (SlicingDetectorProxy will
+      use it's default of 0.3 inside, but the wrapped detector might have
+      another default).
+    - confidence_threshold should not be passed as it's given as an argument.
+    - slicing_threshold should not be passed, because it's the parameter of
+      SlicingDetectorProxy.
+    - extra_arg should be passed.
+
+    """
+    image = Image.new('RGB', (20, 30), (0, 0, 0))
+    detector = mock.MagicMock()
+    detector.batch_detect.return_value = [
+        ('foo_0,0-20,20', []),
+        ('foo_0,10-20,30', []),
+    ]
+    proxy = sdp.SlicingDetectorProxy(detector, 0.3, slice_overlap=0.5)
+    proxy.detect(image, 'foo', 0.1, slicing_threshold=0.9, extra_arg=42)
+    assert len(detector.mock_calls) == 1
+    name, _, kwargs = detector.mock_calls[0]
+    assert name == 'batch_detect'
+    assert kwargs == {'confidence_threshold': 0.1, 'extra_arg': 42}
+
+
+def test_combine_order():
+    """Detections are correctly combined regardless of order.
+
+    `batch_detect()` doesn't have to return the detections in the same order
+    that the images came in. Nevertheless, we should combine them right.
+
+    """
+    image = Image.new('RGB', (20, 30), (0, 0, 0))
+    detector = mock.MagicMock()
+    detector.batch_detect.return_value = [
+        ('foo_0,10-20,30', [(15, 15, 16, 16, 0.15)]),
+        ('foo_0,0-20,20', [(0, 0, 1, 1, 0.1)]),
+    ]
+    proxy = sdp.SlicingDetectorProxy(detector, 0.3, slice_overlap=0.5)
+    got = proxy.detect(image, 'foo')
+    assert set(got) == {(0, 0, 1, 1, 0.1), (15, 25, 16, 26, 0.15)}
