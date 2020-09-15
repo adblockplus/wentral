@@ -28,14 +28,14 @@ import pytest
 import wsgi_intercept as icpt
 from wsgi_intercept import requests_intercept
 
-import wentral.ad_detector as ad
+import wentral.detector as det
 import wentral.webservice as ws
 import wentral.benchmark as bm
 import wentral.dataset as ds
 
 
-class MockAdDetector(ad.AdDetector):
-    """Ad detector that returns prepared answers."""
+class MockDetector(det.Detector):
+    """Object detector that returns static answers."""
 
     name = 'mock-detector'
 
@@ -62,7 +62,7 @@ class MockAdDetector(ad.AdDetector):
 
 @pytest.fixture()
 def mock_detector():
-    return MockAdDetector({
+    return MockDetector({
         '0.png': [
             (0, 0, 50, 20, 0.9),    # Precise detection.
             (82, 12, 94, 45, 0.8),  # Smaller detection.
@@ -85,7 +85,7 @@ def mock_detector():
 
 @pytest.fixture()
 def webservice(mock_detector):
-    """Mock ad detection web service."""
+    """Mock object detection web service."""
     app = ws.make_app(mock_detector)
     host, port = 'localhost', 8080
     url = 'http://{0}:{1}/'.format(host, port)

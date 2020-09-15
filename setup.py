@@ -35,7 +35,7 @@ setup(
     long_description_content_type='text/markdown',
     author='eyeo GmbH',
     author_email='info@adblockplus.org',
-    url='https://gitlab.com/eyeo/sandbox/ad-detect-yolo',
+    url='https://gitlab.com/eyeo/machine-learning/wentral',
     packages=['wentral'],
     entry_points={
         'console_scripts': ['wentral=wentral.__main__:main'],

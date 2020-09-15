@@ -27,7 +27,7 @@ and then combines them.
 import functools
 import math
 
-import wentral.ad_detector as ad
+import wentral.detector as det
 import wentral.constants as const
 import wentral.utils as utils
 
@@ -39,8 +39,8 @@ def _to_absolute(detection, box):
     return x0 + bx0, y0 + by0, x1 + bx0, y1 + by0, p
 
 
-class SlicingDetectorProxy(ad.AdDetector):
-    """Detects ads in full page screenshots (that are tall).
+class SlicingDetectorProxy(det.Detector):
+    """Detects objects in full page screenshots (that are tall).
 
     If the input image aspect ratio (short side over long size) is less than
     slicing_threshold, it is cut into slices (that overlap by slice_overlap)
@@ -58,7 +58,7 @@ class SlicingDetectorProxy(ad.AdDetector):
         ----------
         detector : Detector
             A class with `detect(image, path, ...)` method that is used to
-            detect ads in square slices.
+            detect objects in square slices.
         iou_threshold : float
             Determines which detections from adjacent slices are considered the
             same.
@@ -204,12 +204,12 @@ class SlicingDetectorProxy(ad.AdDetector):
     def detect(self, image, path, confidence_threshold=None,
                iou_threshold=None, slicing_threshold=None, slice_overlap=None,
                **kw):
-        """Detect ads using wrapped detector and slicing as necessary.
+        """Detect objects using wrapped detector and slicing as necessary.
 
         Parameters
         ----------
         image : PIL.Image
-            Source image for ad detection.
+            Source image for object detection.
         path : str
             Path to the image (it's not used by this detector but is a part of
             detector API).
@@ -225,7 +225,7 @@ class SlicingDetectorProxy(ad.AdDetector):
         Returns
         -------
         detections : list of [x0, y0, x1, y1, confidence]
-            Detected ad boxes.
+            Detected boxes.
 
         """
         if confidence_threshold is not None:

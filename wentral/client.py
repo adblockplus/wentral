@@ -18,23 +18,23 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Client for the ad detection web service."""
+"""Client for the object detection web service."""
 
 import io
 import urllib.parse as urlparse
 
 import requests
 
-import wentral.ad_detector as ad
+import wentral.detector as det
 
 
-class ProxyAdDetector(ad.AdDetector):
-    """Ad detector that forwards detection requests to a remote web service.
+class ProxyDetector(det.Detector):
+    """Detector that forwards detection requests to a remote web service.
 
     Parameters
     ----------
     server_url : str
-        URL of the server where ad detector web service is running.
+        URL of the server where object detector web service is running.
 
     """
 
@@ -42,12 +42,12 @@ class ProxyAdDetector(ad.AdDetector):
         super().__init__(server_url=server_url)
 
     def detect(self, image, path, **params):
-        """Upload the image for ad detection and return the response.
+        """Upload the image for object detection and return the response.
 
         Parameters
         ----------
         image : PIL.Image or bytes or file
-            Source image for ad detection.
+            Source image for object detection.
         path : str
             Path to the image (it's not used by this detector but is a part of
             detector API).
@@ -58,7 +58,7 @@ class ProxyAdDetector(ad.AdDetector):
         Returns
         -------
         detections : list of [x0, y0, x1, y1, confidence]
-            Detected ad boxes.
+            Detected boxes.
 
         """
         if not (isinstance(type(image), type(b'')) or hasattr(image, 'read')):

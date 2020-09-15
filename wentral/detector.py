@@ -18,7 +18,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""AdDetector base class and API definition."""
+"""Detector -- base class and API definition."""
 
 from typing import List, Iterable, Tuple
 
@@ -35,10 +35,13 @@ DetectionList = List[Detection]
 DetectionLists = Iterable[Tuple[str, List[Detection]]]
 
 
-class AdDetector:
-    """Ad detector encapsulates ad detection logic of any kind.
+class Detector:
+    """Base class for detectors that identify objects in web pages.
 
-    See `detect` and `batch_detect`.
+    Object detectors can be implemented by subclassing this and implementing
+    `detect` (and optionally `batch_detect`). Subclassing is not required, so
+    any class that implements `detect` and `batch_detect` with the right
+    signatures will work with Wentral just as well.
 
     """
 
@@ -49,8 +52,8 @@ class AdDetector:
         attributes with the same names and will be visible in the output of
         __str__.
 
-        When defining ad detectors, try to provide sensible defaults for as
-        many parameters as possible. This makes it easier to use them without
+        When defining detectors, try to provide sensible defaults for as many
+        parameters as possible. This makes it easier to use them without
         knowning what the sensible values would be.
 
         """
@@ -59,8 +62,7 @@ class AdDetector:
             setattr(self, k, v)
 
     def __str__(self):
-        """Return a string that contains detector name and parameters.
-        """
+        """Return a string that contains detector name and parameters."""
         name = self.__class__.__name__
         params = ', '.join(
             '{}={}'.format(pn, str(getattr(self, pn)))
@@ -69,51 +71,49 @@ class AdDetector:
         return '{}({})'.format(name, params)
 
     def detect(self, image: Image, path: str, **params) -> DetectionList:
-        """Detect ads in the image, return all detected boxes as a list.
+        """Detect object in the screenshot, return detected boxes as a list.
 
         Implementations can accept additional keyword arguments.
 
         Parameters
         ----------
         image : PIL.Image
-            Source image for ad detection.
+            Page screenshot for object detection.
         path : str
-            Path to the image (it's not used by this detector but is a part of
-            detector API).
+            Path to the image.
         params
-            Additional parameters, to override the defaults set in the
-            constructor.
+            Additional parameters, to override defaults set in the constructor.
 
         Returns
         -------
         detections : list of (x0, y0, x1, y1, confidence)
-            Detected ad boxes.
+            Detected boxes.
 
         """
         raise NotImplementedError()
 
     def batch_detect(self, images: List[Tuple[Image, str]],
                      **params) -> DetectionLists:
-        """Detect ads in multiple images (possibly in parralel).
+        """Detect objects in multiple screenshots (possibly in parralel).
 
         The return value might be a generator (this allows implementations to
         return detections as soon as they are ready).
 
-        Note: default implementation delegates to `detect`.
+        Note: default implementation delegates to `detect` and returns a
+        generator.
 
         Parameters
         ----------
         images : list of (PIL.Image, str)
-            List of tuples containing images and their paths.
+            List of tuples containing screenshots and their paths.
         params
-            Additional parameters, to override the defaults set in the
-            constructor.
+            Additional parameters, to override defaults set in the constructor.
 
         Returns
         -------
         detections : iterable of (str, list of (x0, y0, x1, y1, confidence))
-            Detected ad boxes (the sequence doesn't have to be the same as the
-            original sequence of images.
+            Detected boxes (the sequence doesn't have to be in the same as the
+            input).
 
         """
         for image, path in images:

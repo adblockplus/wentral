@@ -18,15 +18,15 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Ad detector that reads detections from a region index."""
+"""Object detector that reads detections from a region index."""
 
 import os
 
-import wentral.ad_detector as ad
+import wentral.detector as det
 import wentral.dataset as ds
 
 
-class StaticDetector(ad.AdDetector, ds.LabeledDataset):
+class StaticDetector(det.Detector, ds.LabeledDataset):
     """Detector based on a region index.
 
     Parameters
@@ -37,11 +37,11 @@ class StaticDetector(ad.AdDetector, ds.LabeledDataset):
     """
 
     def __init__(self, path):
-        ad.AdDetector.__init__(self, path=path)
+        det.Detector.__init__(self, path=path)
         ds.LabeledDataset.__init__(self, path)
 
     def detect(self, image, image_path, **kw):
-        """Return ad detections based on marked regions.
+        """Return detections based on marked regions.
 
         Raises
         ------
@@ -58,5 +58,5 @@ class StaticDetector(ad.AdDetector, ds.LabeledDataset):
 
         return [
             region[:4] + (0.999,) for region in regions
-            if region[4] in self.ad_region_types
+            if region[4] in self.region_types
         ]

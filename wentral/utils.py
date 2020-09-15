@@ -20,8 +20,6 @@
 
 """Common utilities."""
 
-import inspect
-
 # Add this to a possibly zero-valued denominator to avoid division by zero.
 EPSILON = 1e-7
 
@@ -73,28 +71,3 @@ def xy_swap(box):
     """Swap x and y coordinates in a box."""
     x0, y0, x1, y1 = box[:4]
     return (y0, x0, y1, x1) + box[4:]
-
-
-def kwargs_from_ns(func, args):
-    """Extract kwargs for calling `func` from argparse namespace."""
-    signature = inspect.signature(func)
-    params = {}
-    for k, v in signature.parameters.items():
-        if getattr(args, k, None) is not None:
-            params[k] = getattr(args, k)
-        elif v.kind in {inspect.Parameter.VAR_KEYWORD,
-                        inspect.Parameter.VAR_POSITIONAL}:
-            # Skip varargs (*args, **kwargs).
-            continue
-        elif v.default == v.empty:
-            t = str(func).split("'")
-            func_name = t[1] if len(t) == 3 else func
-            raise Exception('Parameter {} is required for detector {}'
-                            .format(k, func_name))
-    for extra in getattr(args, 'extra', []):
-        try:
-            name, value = extra.split('=')
-        except ValueError:
-            raise Exception('Invalid format of extra argument: ' + extra)
-        params[name] = value
-    return params

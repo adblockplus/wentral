@@ -1,7 +1,10 @@
 # Wentral
 
-A frontend for ad detecting machine learning models. Provides benchmarking and
-web service tools.
+A frontend for machine learning models that detect objects in web pages, that
+can be used to:
+
+- Measure and visualize the performance of object detectors on datasets,
+- Run object detector in a web service.
 
 ## Installation
 
@@ -28,10 +31,10 @@ Client code for Python is provided in `wentral.client`:
     from PIL import Image
     import wentral.client as cl
 
-    detector = cl.ProxyAdDetector('http://localhost:8080/')
+    detector = cl.ProxyDetector('http://localhost:8080/')
     path = 'path/image.png'
     image = Image.open(path)
-    ad_boxes = detector.detect(image, path)
+    boxes = detector.detect(image, path)
 
 When using other languages upload the image to `http://localhost:8080/detect`
 using a POST request with Content-Type `multipart/form-data`. The field name
@@ -48,8 +51,8 @@ the detection process:
   the image will be cut into square slices as the model doesn't deal well with
   very non-square images (default: 0.7).
 - `slice_overlap` - minimal ratio of the slice area that will be overlapped:
-  overlaps are necessary to make sure the ads at slice boundaries get detected
-  (default: 0.2).
+  overlaps are necessary to make sure the objects at slice boundaries get
+  detected (default: 0.2).
 
 The defaults can be changed by supplying the options to `wentral ws` (see
 `wentral ws -h` for more info).
@@ -59,20 +62,20 @@ There's also a GET endpoint for requesting server status at
 information about server memory consumption and current active detection
 requests (including their parameters).
 
-### Using alternative ad detectors with `wentral ws`
+### Using alternative object detectors with `wentral ws`
 
 Supply `--detector`/`-d` parameter with a fully qualified name of another
-detector implementation (e.g. `some.other.AdDetector`) and provide
+detector implementation (e.g. `some.other.Detector`) and provide
 `--weights-file`/`-w` option, e.g.:
 
-    $ wentral ws -d my.other.FancyAdDetector -w fancy.weights
+    $ wentral ws -d my.other.FancyDetector -w fancy.weights
 
 ## Benchmarks
 
-`benchmark` (or `bm`) command measures ad detection performance. It can work
-with the web service, model weights or a directory that contains marked
-screenshots. You can also use detections from a previous run saved in a JSON
-file (see below).
+`benchmark` (or `bm`) command measures detection performance. It can work with
+the web service, model weights or a directory that contains marked screenshots.
+You can also use detections from a previous run saved in a JSON file (see
+below).
 
 Wentral will load the images from `dataset_path`. It will also load the ground
 truth from a `.csv` file in the same directory or from `.txt` files (in YOLOv3
@@ -94,7 +97,7 @@ as what `wentral ws` returns.
 ### Usage with YOLO or other object detection model and weights file
 
 Set `--detector` to `yolo` or fully qualified name of another detector
-implementation (e.g. `some.other.AdDetector`) and provide `--weights-file`
+implementation (e.g. `some.other.Detector`) and provide `--weights-file`
 option:
 
     $ wentral bm -d yolo -w yolo_v3.weights dataset_path
@@ -102,9 +105,9 @@ option:
 This will load model weights from `yolo_v3.weights` and then use the resulting
 model.
 
-    $ wentral bm -d some.other.AdDetector -w other.weights dataset_path
+    $ wentral bm -d some.other.Detector -w other.weights dataset_path
 
-This will import `AdDetector` from `some.other` module and instantiate it with
+This will import `Detector` from `some.other` module and instantiate it with
 `weights_file="other.weights"` (the values of `--confidence-threshold` and
 `--iou-threshold`) will also be passed to the constructor if it takes such
 arguments.

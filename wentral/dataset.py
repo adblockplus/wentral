@@ -37,19 +37,21 @@ class LabeledDataset:
         Path to the images and region files.
     index : FragmentIndex
         Index of regions.
-    ad_region_types : list of str
-        Region types that are considered ads.
+    region_types : list of str
+        Region types that we are interested in. The types in this list will be
+        considered detections and the rest will be ignored. By default all
+        regions that don't contains the substring "label" are detected.
 
     """
 
     def __init__(self, path):
         self.path = path
         self.index = idx.reg_index(path)
-        self.ad_region_types = [
+        self.region_types = [
             rt for rt in self.index.region_types
             if 'label' not in rt
         ]
-        logging.debug('Ad region types: {}'.format(self.ad_region_types))
+        logging.debug('Region types: {}'.format(self.region_types))
 
     @property
     def images_path(self):
@@ -64,16 +66,16 @@ class LabeledDataset:
         Yields
         ------
         image_data : (Image, set, list of tuple)
-            Images, their paths and ad boxes.
+            Images, their paths and detection boxes.
 
         """
         for image_name in sorted(self.index):
             image_path = os.path.join(self.path, image_name)
-            ad_boxes = [
+            boxes = [
                 region[:4] for region in self.index[image_name]
-                if region[4] in self.ad_region_types
+                if region[4] in self.region_types
             ]
-            yield PIL.Image.open(image_path), image_path, ad_boxes
+            yield PIL.Image.open(image_path), image_path, boxes
 
 
 class JsonDataset:
@@ -83,10 +85,6 @@ class JsonDataset:
     ----------
     path : str
         Path to the JSON file.
-    index : FragmentIndex
-        Index of regions.
-    ad_region_types : list of str
-        Region types that are considered ads.
 
     """
 
@@ -105,7 +103,7 @@ class JsonDataset:
         Yields
         ------
         image_data : (Image, set, list of tuple)
-            Images, their paths and ad boxes.
+            Images, their paths and detection boxes.
 
         """
         for img in self.data['images']:

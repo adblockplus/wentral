@@ -18,7 +18,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Test ad detection client and server."""
+"""Test object detection client and server."""
 
 import threading
 import time
@@ -32,7 +32,7 @@ import wentral.client as wc
 
 @pytest.fixture()
 def proxy_detector(webservice):
-    return wc.ProxyAdDetector(webservice['url'])
+    return wc.ProxyDetector(webservice['url'])
 
 
 @pytest.fixture()
@@ -49,7 +49,7 @@ def screenshot_image():
 
 
 def test_client_server(proxy_detector, screenshot_image, webservice):
-    """Detect ads in a PIL.Image."""
+    """Detect objects in a PIL.Image."""
     boxes = proxy_detector.detect(screenshot_image, 'foo.png')
     log = webservice['app'].detector.log
     assert boxes == [(10, 20, 30, 40, 0.9)]
@@ -71,7 +71,7 @@ def test_client_server_params(proxy_detector, screenshot_image, webservice):
 
 
 def test_client_server_file(proxy_detector, screenshot_image, tmpdir):
-    """Detect ads in an open image file."""
+    """Detect objects in an open image file."""
     img_path = tmpdir.join('foo.png')
     screenshot_image.save(str(img_path))
     with img_path.open('rb') as im_file:
@@ -105,7 +105,7 @@ def test_server_status_req(mock_detector, get_server_status, proxy_detector,
     assert set(r['image_name'] for r in reqs) == {'0.png', '1.png', '2.png'}
     assert set(r['id'] for r in reqs) == {0, 1, 2}
     for r in reqs:
-        assert r['state'] == 'ad-detect'
+        assert r['state'] == 'detect'
         assert r['params'] == {'confidence_threshold': 0.5}
         assert r['start_t'] is not None
         assert r['detect_t'] is not None

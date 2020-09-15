@@ -18,15 +18,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Common configuration and detector loading."""
+"""Configuration and detector loading."""
 
 import importlib
-
-import wentral.utils as utils
+import inspect
 
 DETECTOR_SHORTCUTS = {
     'json': 'wentral.json_detector.JsonDetector',
-    'server': 'wentral.client.ProxyAdDetector',
+    'server': 'wentral.client.ProxyDetector',
     'static': 'wentral.static_detector.StaticDetector',
 }
 
@@ -42,20 +41,45 @@ def load_detector_class(path):
         raise ImportError('Import of detector failed: ' + path)
 
 
+def kwargs_from_ns(func, args):
+    """Extract kwargs for calling `func` from argparse namespace."""
+    signature = inspect.signature(func)
+    params = {}
+    for k, v in signature.parameters.items():
+        if getattr(args, k, None) is not None:
+            params[k] = getattr(args, k)
+        elif v.kind in {inspect.Parameter.VAR_KEYWORD,
+                        inspect.Parameter.VAR_POSITIONAL}:
+            # Skip varargs (*args, **kwargs).
+            continue
+        elif v.default == v.empty:
+            t = str(func).split("'")
+            func_name = t[1] if len(t) == 3 else func
+            raise Exception('Parameter {} is required for detector {}'
+                            .format(k, func_name))
+    for extra in getattr(args, 'extra', []):
+        try:
+            name, value = extra.split('=')
+        except ValueError:
+            raise Exception('Invalid format of extra argument: ' + extra)
+        params[name] = value
+    return params
+
+
 def make_detector(args):
     """Load and instantiate the detector class.
 
     Parameters
     ----------
     args : Namespace
-        Namespace containing parsed arguments (see `add_detector_ads`).
+        Namespace containing parsed arguments (see `kwargs_from_ns`).
 
     Returns
     -------
-    detector : AdDetector
-        Initialized ad detector object.
+    detector : Detector
+        Initialized object detector instance.
 
     """
     detector_class = load_detector_class(args.detector)
-    kw = utils.kwargs_from_ns(detector_class, args)
+    kw = kwargs_from_ns(detector_class, args)
     return detector_class(**kw)

@@ -185,7 +185,7 @@ def test_slicing_detection_proxy(slice_detections, iou_threshold, expect):
     image = Image.new('RGB', (20, 40), (0, 0, 0))
     img_name = 'foo'
     frag_path_tmpl = '{0}_{1[0]},{1[1]}-{1[2]},{1[3]}'
-    detector = conftest.MockAdDetector({
+    detector = conftest.MockDetector({
         frag_path_tmpl.format(img_name, box): dets
         for box, dets in zip(slice_boxes, slice_detections)
     })

@@ -31,7 +31,6 @@ import wentral.benchmark as bm
 import wentral.config as conf
 import wentral.dataset as ds
 import wentral.slicing_detector_proxy as sdp
-import wentral.utils as utils
 import wentral.webservice as ws
 
 parser = argparse.ArgumentParser(description=__doc__)
@@ -93,7 +92,7 @@ def common_args():
         arg(
             '--detector', '-d', metavar='CLASS',
             help='Detector class (full name or shortcut, e.g. server, static, '
-                 'json, wentral.client.ProxyAdDetector)',
+                 'json, wentral.client.ProxyDetector)',
         ),
         arg(
             '--confidence-threshold', '-c', metavar='X', type=float,
@@ -107,7 +106,7 @@ def common_args():
         ),
         arg(
             '--server-url', '-s', metavar='URL',
-            help='URL of ad detection service (use with -d server)',
+            help='URL of detection service (use with -d server)',
         ),
         arg(
             '--weights-file', '-w', metavar='PATH',
@@ -164,7 +163,7 @@ mAP: {0.mAP:.2%}"""
 )
 @arg(
     'dataset', metavar='DATASET',
-    help='Directory that contains test images with marked ads.',
+    help='Directory that contains test images with marked objects.',
 )
 def benchmark(args):
     """Measure and visualize model performance."""
@@ -218,7 +217,7 @@ def webserve(args):
     # Remove/change arguments that are only relevant for the main detector.
     args.detector = detector
     args.extra = []
-    kw = utils.kwargs_from_ns(sdp.SlicingDetectorProxy, args)
+    kw = conf.kwargs_from_ns(sdp.SlicingDetectorProxy, args)
     slicing_proxy = sdp.SlicingDetectorProxy(**kw)
     app = ws.make_app(slicing_proxy)
     lapp = tl.TransLogger(app, setup_console_handler=False)

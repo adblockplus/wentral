@@ -18,18 +18,18 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""AdDetector that loads the detections from a JSON file."""
+"""Detector that loads the detections from a JSON file."""
 
 import json
 import os
 
-import wentral.ad_detector as ad
+import wentral.detector as det
 import wentral.constants as const
 import wentral.utils as u
 
 
-class JsonDetector(ad.AdDetector):
-    """AdDetector that loads detections from a JSON file.
+class JsonDetector(det.Detector):
+    """Detector that loads detections from a JSON file.
 
     It can still perform additional confidence thresholding and IoU
     deduplication.
@@ -76,7 +76,7 @@ class JsonDetector(ad.AdDetector):
         Parameters
         ----------
         image : PIL.Image
-            Source image for ad detection.
+            Source image for object detection.
         path : str
             Path to the image (it's not used by this detector but is a part of
             detector API).
@@ -88,7 +88,7 @@ class JsonDetector(ad.AdDetector):
         Returns
         -------
         detections : list of [x0, y0, x1, y1, confidence]
-            Detected ad boxes.
+            Detected boxes.
 
         """
         if iou_threshold is None:

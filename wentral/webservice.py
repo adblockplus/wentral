@@ -18,7 +18,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Flask-based web service that detects ads in screenshots."""
+"""Flask-based web service that detects objects in screenshots."""
 
 import json
 import logging
@@ -36,7 +36,7 @@ class RequestData:
 
     # State constants.
     PREPARE = 'prepare'
-    AD_DETECT = 'ad-detect'
+    DETECT = 'detect'
     RESPONSE = 'response'
 
     def __init__(self, request_id):
@@ -49,7 +49,7 @@ class RequestData:
         self.end_t = None
 
     def to_detect(self):
-        self.state = self.AD_DETECT
+        self.state = self.DETECT
         self.detect_t = timer()
 
     def to_response(self):
@@ -85,7 +85,7 @@ class Counter:
 
 
 def make_app(detector):
-    """Make a Flask-based web-service that detects ads using `detector`."""
+    """Make a Flask-based web-service that detects objects using `detector`."""
     app = flask.Flask(__name__)
     app.detector = detector
     app.id_counter = Counter()
@@ -127,7 +127,7 @@ def make_app(detector):
 
     @app.route('/detect', methods=['POST'])
     def detect():
-        """Detect ads in uploaded image."""
+        """Detect objects in uploaded image."""
         request_id = app.id_counter.next()
         request_data = app.requests[request_id] = RequestData(request_id)
 
@@ -152,8 +152,8 @@ def make_app(detector):
             boxes = app.detector.detect(image, image_name, **kw)
             request_data.to_response()
             det_time = request_data.end_t - request_data.detect_t
-            logging.info('Found {} ads in {} seconds'.format(len(boxes),
-                                                             det_time))
+            logging.info('Found {} objects in {} seconds'.format(len(boxes),
+                                                                 det_time))
             logging.debug('RSS after detection: %d', _mem_rss())
 
             response_body = json.dumps({

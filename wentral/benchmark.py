@@ -18,7 +18,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Compare ad detections to the ground truth."""
+"""Compare detections to the ground truth."""
 
 import json
 import logging
@@ -59,7 +59,7 @@ class MatchSet:
     Attributes
     ----------
     image_name : str
-        Name of the image in which the ads are detected.
+        Name of the image in which the objects are detected.
     detections : list of tuple (x0, y0, x1, y1, confidence, is_true)
         All detections regardless of confidence but without duplicates.
     ground_truth : list of tuple (x0, y0, x1, y1, detection_confidence)
@@ -88,7 +88,7 @@ class MatchSet:
         Parameters
         ----------
         image_name : str
-            Name of the image in which the ads are detected.
+            Name of the image in which the objects are detected.
         detections : list of tuple (x0, y0, x1, y1, confidence)
             Detected boxes.
         ground_truth : list of tuple (x0, y0, x1, y1)
@@ -310,8 +310,8 @@ class Evaluation:
     ----------
     dataset : LabeledDataset
         Source of images and ground truth.
-    detector : AdDetector (has .detect(image, path) -> boxes)
-        Ad detector that was evaluated.
+    detector : Detector (has .detect(image, path) -> boxes)
+        Detector that was evaluated.
     matchsets : list of MatchSet
         Information about performance on individual images.
     tp : int
@@ -388,10 +388,10 @@ def match_detections(dataset, detector, **params):
     Parameters
     ----------
     dataset : iterable of (image, image_path, expected_boxes)
-        Source of images and true ad detections.
-    detector : AdDetector (has .detect(image, path) -> list of detections)
-        Ad detector to benchmark (returns a list of 5-element tuples with
-        box coordinates followed by confidence).
+        Source of images and true detections.
+    detector : Detector (has .detect(image, path) -> list of detections)
+        Detector to benchmark (returns a list of 5-element tuples with box
+        coordinates followed by confidence).
     params : dict
         Parameters for the detector, such as confidence_threshold and
         match_iou.
@@ -407,12 +407,12 @@ def match_detections(dataset, detector, **params):
 
     for image, image_path, expected_boxes in dataset:
         logging.info('Processing image: {}'.format(image_path))
-        logging.debug('Marked ads: {}'.format(expected_boxes))
+        logging.debug('Marked objects: {}'.format(expected_boxes))
         if image.mode != 'RGB':
             image = image.convert('RGB')
         detected_boxes = detector.detect(image, image_path,
                                          confidence_threshold=0.001)
-        logging.debug('Detected ads: {}'.format(detected_boxes))
+        logging.debug('Detected objects: {}'.format(detected_boxes))
         image_name = os.path.basename(image_path)
         ms = MatchSet(image_name, detected_boxes, expected_boxes, **params)
 
@@ -428,9 +428,9 @@ def evaluate(dataset, detector, **params):
     Parameters
     ----------
     dataset : iterable of (image, image_path, expected_boxes)
-        Source of images and true ad detections.
-    detector : AdDetector (has .detect(image, path) -> boxes)
-        Ad detector to benchmark.
+        Source of images and true detections.
+    detector : Detector (has .detect(image, path) -> boxes)
+        Detector to benchmark.
     params : dict
         Parameters for the detector, such as confidence_threshold and
         match_iou.
