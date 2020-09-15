@@ -101,13 +101,16 @@ def shmetector(mocker, mock_detector):
     fqn = 'wentral.Shmetector'
 
     def construct_detector(weights_file, iou_threshold=0.5, missing=None,
-                           extra_one=None, extra_two=None, *args, **kwargs):
+                           extra_one: list = None, extra_two: int = None,
+                           *args, **kwargs):
         """Mock of detector constructor. Note: it requires `weights_file`."""
         assert weights_file == '/a/b/c'
         if extra_two is not None:
-            print('extra_two=' + extra_two)
+            assert type(extra_two) == int
+            print('extra_two={}'.format(extra_two))
         if extra_one is not None:
-            print('extra_one=' + extra_one)
+            assert type(extra_one) == list
+            print('extra_one=' + ''.join(extra_one))
         mock_detector.name = ('MD(weights_file={}, iou_threshold={})'
                               .format(weights_file, iou_threshold))
         return mock_detector

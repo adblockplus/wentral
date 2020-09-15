@@ -43,11 +43,11 @@ def load_detector_class(path):
 
 def kwargs_from_ns(func, args):
     """Extract kwargs for calling `func` from argparse namespace."""
-    signature = inspect.signature(func)
-    params = {}
-    for k, v in signature.parameters.items():
+    params = inspect.signature(func).parameters
+    kwargs = {}
+    for k, v in params.items():
         if getattr(args, k, None) is not None:
-            params[k] = getattr(args, k)
+            kwargs[k] = getattr(args, k)
         elif v.kind in {inspect.Parameter.VAR_KEYWORD,
                         inspect.Parameter.VAR_POSITIONAL}:
             # Skip varargs (*args, **kwargs).
@@ -60,10 +60,14 @@ def kwargs_from_ns(func, args):
     for extra in getattr(args, 'extra', []):
         try:
             name, value = extra.split('=')
+            if name in params:
+                annotation = params[name].annotation
+                if annotation != inspect.Parameter.empty:
+                    value = annotation(value)
         except ValueError:
             raise Exception('Invalid format of extra argument: ' + extra)
-        params[name] = value
-    return params
+        kwargs[name] = value
+    return kwargs
 
 
 def make_detector(args):

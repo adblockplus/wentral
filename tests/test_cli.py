@@ -54,7 +54,7 @@ def test_server(script_runner, dataset_dir, webservice):
 @pytest.mark.parametrize('extras', [
     [],
     ['-x', 'broken'],
-    ['--extra', 'extra_one=foo', '-x', 'extra_two=bar'],
+    ['--extra', 'extra_one=foo', '-x', 'extra_two=42'],
 ])
 def test_other(script_runner, shmetector, dataset_dir, weights_file, extras):
     """Test with -d wentral.Shmetector (that requires weights_file)."""
