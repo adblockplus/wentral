@@ -1,4 +1,5 @@
-# Wentral
+![Wentral](docs/img/eyeo_like_robot-transparent-256.png)
+
 
 A frontend for machine learning models that detect objects in web pages, that
 can be used to:
