@@ -26,6 +26,7 @@ jobs:
           git pull 
           mv LICENSE.txt  docs/
           mv README.md  docs/
+          cp .gitlab-ci.yml docs/
           mkdir docs/docs
           cp docs/*.md docs/docs
           cp -r docs/img/ docs/docs
