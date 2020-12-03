@@ -26,7 +26,8 @@ jobs:
           git pull 
           mv LICENSE.txt  docs/
           mv README.md  docs/
-          cp .gitlab-ci.yml docs/
+          cp .gitlab-ci.yml docs/gitlab-ci.yml
+          sed -i "s/(\.gitlab-ci.yml)/(gitlab-ci.yml)/g" docs/README.md
           mkdir docs/docs
           cp docs/*.md docs/docs
           cp -r docs/img/ docs/docs
