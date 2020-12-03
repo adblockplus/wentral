@@ -1,0 +1,515 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Wentral Project documentation with Markdown.">
+      
+      
+      
+      
+        <meta name="author" content="Eyeo GmBH">
+      
+      <link rel="shortcut icon" href="../../img/eyeo_like_robot-white-256.png">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.1.6">
+    
+    
+      
+        <title>Wentral command line usage - Wentral</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.6910b76c.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.196e0c26.min.css">
+        
+      
+    
+    
+    
+      
+        
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono",SFMono-Regular,Consolas,Menlo,monospace}</style>
+      
+    
+    
+    
+    
+      
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+      
+  
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#wentral-command-line-usage" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid" aria-label="Header">
+    <a href="../.." title="Wentral" class="md-header-nav__button md-logo" aria-label="Wentral">
+      
+  <img src="../../img/eyeo_like_robot-transparent-256.png" alt="logo">
+
+    </a>
+    <label class="md-header-nav__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header-nav__title" data-md-component="header-title">
+      
+        <div class="md-header-nav__ellipsis">
+          <span class="md-header-nav__topic md-ellipsis">
+            Wentral
+          </span>
+          <span class="md-header-nav__topic md-ellipsis">
+            
+              Wentral command line usage
+            
+          </span>
+        </div>
+      
+    </div>
+    
+      <label class="md-header-nav__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" data-md-component="search-reset" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Wentral" class="md-nav__button md-logo" aria-label="Wentral">
+      
+  <img src="../../img/eyeo_like_robot-transparent-256.png" alt="logo">
+
+    </a>
+    Wentral
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../.." class="md-nav__link">
+      Overview
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../cli/" class="md-nav__link">
+      Command line usage
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../api/" class="md-nav__link">
+      API
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../file-formats/" class="md-nav__link">
+      File Formats
+    </a>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#web-service" class="md-nav__link">
+    Web service
+  </a>
+  
+    <nav class="md-nav" aria-label="Web service">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#slicing-proxy" class="md-nav__link">
+    Slicing proxy
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#benchmarking" class="md-nav__link">
+    Benchmarking
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#visualization" class="md-nav__link">
+    Visualization
+  </a>
+  
+    <nav class="md-nav" aria-label="Visualization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#screenshots" class="md-nav__link">
+    Screenshots
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#detections" class="md-nav__link">
+    Detections
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#similarity-data" class="md-nav__link">
+    Similarity data
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#detector-arguments" class="md-nav__link">
+    Detector arguments
+  </a>
+  
+    <nav class="md-nav" aria-label="Detector arguments">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#special-detectors" class="md-nav__link">
+    Special detectors
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                <h1 id="wentral-command-line-usage">Wentral command line usage</h1>
+<p>Wentral contains a command line wrapper (called <code>wentral</code>) that allows access
+to most features. When installing Wentral with <code>pip install</code> it will be placed
+into the <code>bin/</code> directory where Python and other script wrappers live. The
+CLI has two subcommands that are described below.</p>
+<h2 id="web-service">Web service</h2>
+<p>Wentral can expose any <a href="../api/#implementing-detectors">detector implementation</a>
+as a <a href="../api/#using-the-web-service">web service</a> that can be used to perform
+multiple benchmarking runs without reloading the model or as part of production
+setup.</p>
+<p>The basic invocation goes like this:</p>
+<pre><code>$ wentral ws -d DETECTOR_CLASS -w WEIGHTS_FILE [--port PORT]
+</code></pre>
+<p>The web service will listen on specified <code>PORT</code> (8080 by default), and you can
+interact with it by pointing your browser to <code>http://localhost:8080/</code> or
+<a href="../api/#using-the-web-service">programmatically</a>. See <code>wentral ws -h</code> for
+description of additional options or see
+<a href="#detector-arguments">detector arguments description</a> below.</p>
+<p>There's also a GET endpoint for requesting server status at
+<code>http://localhost:8080/status</code>. It returns a JSON document that contains the
+information about server memory consumption and current active detection
+requests (including their parameters).</p>
+<h3 id="slicing-proxy">Slicing proxy</h3>
+<p>What <code>wentral ws</code> exposes is actually not the detector class itself. Instead it
+wraps it with <code>SlicindDetectorProxy</code> from <code>wentral.slicing_detector_proxy</code>. The
+proxy can deal with screenshots that are very far from square share by slicing
+them into square fragments, running detection on fragments (it calls
+<code>batch_detect</code> method of the original detector class) and then combining the
+detections from the fragments into detections from the whole screenshot.</p>
+<p>To configure the slicing, <code>wentral ws</code> takes the following additional
+parameters:</p>
+<ul>
+<li><code>--slicing-threshold</code> -- If the aspect ratio (short axis, typically width,
+  divided by long axis, typically height) of the screenshot is equal or less
+  than this number, it will be sliced. Otherwise slicing proxy just passes it
+  through to the wrapped detector. The default value for this is 0.7.</li>
+<li><code>--slice-overlap</code> -- When non-square images are cut into slices, the slices
+  will overlap each other by some percentage of their area. This parameter
+  configures the overlap percentage. Default value is 0.2.</li>
+</ul>
+<h2 id="benchmarking">Benchmarking</h2>
+<p>Wentral can also be used to measure the performance of
+<a href="../api/#implementing-detectors">detector implementations</a>:</p>
+<pre><code>$ wentral bm -d DETECTOR_CLASS DATASET_PATH
+</code></pre>
+<p>You will need to supply detector-specific parameters like <code>--weights-file</code>/<code>-w</code>
+to initialize the detector class. Run <code>wentral bm -h</code> to get more help on
+those or see <a href="#detector-arguments">detector arguments description</a> below.</p>
+<p>Wentral will load the images from <code>DATASET_PATH</code>. It will also load the ground
+truth from a CSV file in the same directory or from TXT files (in YOLOv3)
+format) that have the same names as the images.</p>
+<p>Benchmark runs output overall statistics to standard output. You can request
+numbers on individual images using <code>--verbose</code>/<code>-v</code> and/or more detailed JSON
+output via <code>--output</code> or <code>-o</code>.</p>
+<p>Other command line arguments that affect benchmarking are:</p>
+<ul>
+<li><code>--confidence-threshold</code>/<code>-c</code> -- Only detections with confidence equal or
+  greater than this are counted for the purposes of calculating true and false
+  positives, false negatives, precision, recall and f1 score. For mAP all
+  detections are used, they are also all stored in JSON output if it's
+  requested. The default confidence threshold is 0.5.</li>
+<li><code>--match-iou</code>/<code>-m</code> -- Only detections that have sufficient overlap with the
+  ground truth boxes are counted as true positives. Overlap is measured by
+  intersection over union (IoU) and this argument sets IoU value at which
+  detections are considered to be matching the ground truth. The default value
+  for this argument is 0.4.</li>
+<li><code>--visualizations-path</code>/<code>-z</code> -- Create a <a href="#visualization">visualization</a> of
+  detections and ground truth boxes and save it in the directory specified by
+  this parameter.</li>
+</ul>
+<h2 id="visualization">Visualization</h2>
+<p>When visualization is requested, <code>wentral bm</code> will create an additional
+visualization folder. The folder will contain <code>index.html</code>, some JavaScript and
+JSON and some images. The UI can be viewed locally with <code>python -m
+http.server</code> or hosted at a more serious webserver, or cloud static hosting
+like Amazon S3 or Google Cloud Storage. Then just point your browser to
+<code>index.html</code>.</p>
+<p>There are two sections in the visualization UI: screenshots and detections.</p>
+<h3 id="screenshots">Screenshots</h3>
+<p>This section shows full screenshots with detection boxes drawn on top of them.
+The colors of the displayed boxes will be as follows:</p>
+<ul>
+<li>Detection matching a ground truth box (true positive): green,</li>
+<li>Detection not matching a ground truth box (false positive): orange,</li>
+<li>Ground truth box matching a detection (also true positive): blue,</li>
+<li>Ground truth box not matching a detection (false negative): red.</li>
+</ul>
+<p>All detections also have their corresponding confidence displayed on top of
+them in %. You can adjust the size of screenshots using the slider at the top,
+or zoom in with a mouse click on the screenshot.</p>
+<p>It's possible to filter the screenshots to only see the ones that have false
+positives or false negatives in them.</p>
+<h3 id="detections">Detections</h3>
+<p>This section shows detections and ground truth boxes:</p>
+<ul>
+<li>Ground truth boxes that have been detected have a blue frame,</li>
+<li>Detections matching a ground truth box have a green frame,</li>
+<li>Detections not matching a ground truth box (false positive) have an orange
+  frame,</li>
+<li>Undetected ground truth boxes (false negatives) have a red frame.</li>
+</ul>
+<p>Similarly to the screenshots view, it's possible to zoom in by clicking on
+detections. The zoom in view also shows the detection or ground truth box in
+context of the screenshot that it comes from.</p>
+<h3 id="similarity-data">Similarity data</h3>
+<p>An additional file with detection/ground truth <a href="../file-formats/#detection-similarity-data">similarity
+information</a> can be placed into the
+same directory named <code>nn.json</code>. When similarity information is provided,
+similar images are displayed in the zoom in view below the full screenshot (for
+those fragments for which similarity is provided).</p>
+<h2 id="detector-arguments">Detector arguments</h2>
+<p>Most detectors are Python classes that wrap machine learning models, usually
+neural networks. The arguments that are normally provided to them are:</p>
+<ul>
+<li><code>--weights-file</code>/<code>-w</code> -- path of the file that contains model weights.</li>
+<li><code>--iou-threshold</code> -- Usually the models discard detections that have too much
+  overlap with other detections. Overlap is measured by intersection over union
+  (IoU) and this argument sets IoU value at which detections are considered to
+  be duplicates. The default value for this is 0.4.</li>
+</ul>
+<p>In addition, you can use <code>--extra</code>/<code>-x</code> (the parameter takes the form
+<code>ARGNAME=VALUE</code>) to pass additional parameters to the constructor of the
+detector class.</p>
+<h3 id="special-detectors">Special detectors</h3>
+<p>In addition to ML-based detectors, there are 3 built-in special detectors that
+can be specified as the value of <code>-d</code> argument:</p>
+<ul>
+<li><code>json</code> -- This detector needs <code>--path</code>/<code>-p</code> argument pointing to a JSON file
+  that was earlier produced by <code>wentral bm ... -o JSON_FILE</code>. It will load
+  detections from this JSON file and it allows recalculating the results with
+  different confidence threshold and match IoU values.</li>
+<li><code>server</code> -- This detector needs <code>--server-url</code>/<code>-s</code> argument with URL of a
+  server that runs <code>wentral ws</code>. Mostly useful for running several benchmarks
+  on the same model without reloading the weights.</li>
+<li><code>static</code> -- This detector needs <code>--path</code>/<code>-p</code> argument that points to a
+  directory containing a dataset (in the same format as <code>DATASET</code>). The
+  detector returns marked regions in that dataset as detections. Of course if
+  the two datasets must contain the same images. This is useful for evaluating
+  datasets labeled by humans to establish a human level baseline.</li>
+</ul>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            Copyright &copy; <script>document.write(new Date().getFullYear())</script> <a href="https://www.eyeo.com">Eyeo GmBH</a>.
+          </div>
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../../assets/javascripts/vendor.fd16492e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.7836ba4d.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}</script>
+      
+      <script>
+        app = initialize({
+          base: "../..",
+          features: [],
+          search: Object.assign({
+            worker: "../../assets/javascripts/worker/search.4ac00218.min.js"
+          }, typeof search !== "undefined" && search)
+        })
+      </script>
+      
+    
+  </body>
+</html>

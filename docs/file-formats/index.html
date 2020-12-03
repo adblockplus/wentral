@@ -1,0 +1,435 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Wentral Project documentation with Markdown.">
+      
+      
+      
+      
+        <meta name="author" content="Eyeo GmBH">
+      
+      <link rel="shortcut icon" href="../../img/eyeo_like_robot-white-256.png">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.1.6">
+    
+    
+      
+        <title>Wentral file formats - Wentral</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.6910b76c.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.196e0c26.min.css">
+        
+      
+    
+    
+    
+      
+        
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono",SFMono-Regular,Consolas,Menlo,monospace}</style>
+      
+    
+    
+    
+    
+      
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+      
+  
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#wentral-file-formats" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid" aria-label="Header">
+    <a href="../.." title="Wentral" class="md-header-nav__button md-logo" aria-label="Wentral">
+      
+  <img src="../../img/eyeo_like_robot-transparent-256.png" alt="logo">
+
+    </a>
+    <label class="md-header-nav__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header-nav__title" data-md-component="header-title">
+      
+        <div class="md-header-nav__ellipsis">
+          <span class="md-header-nav__topic md-ellipsis">
+            Wentral
+          </span>
+          <span class="md-header-nav__topic md-ellipsis">
+            
+              Wentral file formats
+            
+          </span>
+        </div>
+      
+    </div>
+    
+      <label class="md-header-nav__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" data-md-component="search-reset" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Wentral" class="md-nav__button md-logo" aria-label="Wentral">
+      
+  <img src="../../img/eyeo_like_robot-transparent-256.png" alt="logo">
+
+    </a>
+    Wentral
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../.." class="md-nav__link">
+      Overview
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../cli/" class="md-nav__link">
+      Command line usage
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../api/" class="md-nav__link">
+      API
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../../file-formats/" class="md-nav__link">
+      File Formats
+    </a>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#dataset-regions" class="md-nav__link">
+    Dataset regions
+  </a>
+  
+    <nav class="md-nav" aria-label="Dataset regions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#csv" class="md-nav__link">
+    CSV
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#txt-yolo-format" class="md-nav__link">
+    TXT (YOLO format)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#json-output-of-benchmarks" class="md-nav__link">
+    JSON output of benchmarks
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#output-of-benchmark-visualization" class="md-nav__link">
+    Output of benchmark visualization
+  </a>
+  
+    <nav class="md-nav" aria-label="Output of benchmark visualization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#detection-similarity-data" class="md-nav__link">
+    Detection similarity data
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                <h1 id="wentral-file-formats">Wentral file formats</h1>
+<p>Wentral creates and consumes several file formats that are described below.</p>
+<h2 id="dataset-regions">Dataset regions</h2>
+<p>Datasets generally come as a directory of images that contain an additional
+file or files with region markings. Region markings come in CSV or TXT formats.</p>
+<h3 id="csv">CSV</h3>
+<p>CSV region markings are a single file that contains the following columns:</p>
+<ul>
+<li><code>image</code> -- file name of the image to which the region belongs.</li>
+<li><code>xmin</code>, <code>ymin</code>, <code>xmax</code>, <code>ymax</code> -- bounding box of the region; the coordinates
+  are from 0 to width / height - 1.</li>
+<li><code>label</code> -- a text string, indicating the type for this region.</li>
+</ul>
+<h3 id="txt-yolo-format">TXT (YOLO format)</h3>
+<p>TXT region markings are one file per image, that has the same name as the image
+but with <code>.txt</code> extension (instead of <code>.png</code> or <code>.jpg</code>). The file contains one
+line per region, that has the following format:</p>
+<p>TYPE X Y WIDTH HEIGHT</p>
+<p>Here <code>TYPE</code> is a non-negative integer that indicates the region type, <code>X</code> and
+<code>Y</code> are floats between 0 and 1 that are coordinates of the center of the region
+and <code>WIDTH</code> and <code>HEIGHT</code> are floats between 0 and 1 that are width and height
+of the region. All sizes and coordinates are relative to the image size.</p>
+<p>TXT region files normally come accompanied by <code>region.names</code> file that contains
+the names of the region types: the first line corresponds to <code>TYPE</code> 0, second
+line to <code>TYPE</code> 1 and so forth.</p>
+<h2 id="json-output-of-benchmarks">JSON output of benchmarks</h2>
+<p>Benchmarking detectors with <code>wentral bm ... -o output.json</code> produces a detailed
+results file in JSON format. The content of the file is an object with the
+following keys:</p>
+<ul>
+<li><code>dataset</code> -- Dataset description.</li>
+<li><code>detector</code> -- Detector and its parameters.</li>
+<li><code>image_count</code> -- Number of images in the dataset.</li>
+<li><code>images_path</code> -- Path to the dataset directory.</li>
+<li><code>tp</code> -- True positives count.</li>
+<li><code>fp</code> -- False positives count.</li>
+<li><code>fn</code> -- False negatives count.</li>
+<li><code>precision</code>, <code>recall</code>, <code>f1</code> -- Precision, recall and F1 score.</li>
+<li><code>mAP</code> -- Mean average precision (it's actually simple average precision
+  because Wentral only has one class or regions).</li>
+<li><code>images</code> -- Array of objects that contain information about individual
+  images. Each object contains the following keys:</li>
+<li><code>image_name</code> -- File name of the image.</li>
+<li><code>confidence_threshold</code> -- Confidence threshold that's used to filter the
+    detections before they are compared to the ground truth.</li>
+<li><code>match_iou</code> -- IoU necessary for a detection to match a ground truth box.</li>
+<li><code>tp</code>, <code>fp</code>, <code>fn</code>, <code>precision</code>, <code>recall</code>, <code>f1</code> -- Results for this one
+    image.</li>
+<li><code>detections</code> -- Array of arrays that contain coordinates of detections
+    (X0, Y0, X1, Y1) followed by detection confidence and <code>true</code>/<code>false</code>
+    depending on whether this detection matches a ground truth box. Note that
+    only detections with confidence over the threshold are counted for
+    evaulating model performance.</li>
+<li><code>ground_truth</code> -- Array of arrays that contain coordinates of ground truth
+    boxes (X0, Y0, X1, Y1) followed by detection confidence. If there are no
+    matching detections, detection confidence will be 0.</li>
+</ul>
+<h2 id="output-of-benchmark-visualization">Output of benchmark visualization</h2>
+<p>Running <code>wentral bm ... -z vis-dir</code> produces a directory with visualization UI.
+It consists of the original images with detection boxes drawn on them, smaller
+images of detections and ground truth boxes, <code>index.html</code> that contains the
+HTML of the UI, <code>visualization.js</code> that contains the logic and <code>data.js</code> that
+contains the data. <code>data.json</code> contains a list of objects with the following
+keys:</p>
+<ul>
+<li><code>name</code> -- File name of the image.</li>
+<li><code>tp</code>, <code>fp</code>, <code>fn</code> -- Number of true / false positives and false negatives.</li>
+<li><code>detections</code> -- Object with two keys: <code>true</code> and <code>false</code>, that each contain
+  an array of object with the following keys:</li>
+<li><code>file</code> -- File name of the detection image.</li>
+<li><code>box</code> -- Array that contains the box coordinates and detection confidence.</li>
+<li><code>ground_truth</code> -- Object with two keys: <code>detected</code> and <code>missed</code>, that each
+  contain an array of objects with the following keys:</li>
+<li><code>file</code> -- File name of the detection image.</li>
+<li><code>box</code> -- Array that contains the box coordinates and detection confidence
+    (detection confidence might be 0).</li>
+</ul>
+<h3 id="detection-similarity-data">Detection similarity data</h3>
+<p>Visualization UI can also display ground truth boxes similar to false positives
+and false negatives. For this a detection similarity file should be placed in
+the visualization directory. It should be named <code>nn.json</code> and contain an object
+that maps file names of the detections / ground truth images to an array of
+objects with the following keys:</p>
+<ul>
+<li><code>file</code> -- File name of the similar image.</li>
+<li><code>dist</code> -- Distance between the original image and the similar one.</li>
+</ul>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            Copyright &copy; <script>document.write(new Date().getFullYear())</script> <a href="https://www.eyeo.com">Eyeo GmBH</a>.
+          </div>
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../../assets/javascripts/vendor.fd16492e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.7836ba4d.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}</script>
+      
+      <script>
+        app = initialize({
+          base: "../..",
+          features: [],
+          search: Object.assign({
+            worker: "../../assets/javascripts/worker/search.4ac00218.min.js"
+          }, typeof search !== "undefined" && search)
+        })
+      </script>
+      
+    
+  </body>
+</html>
