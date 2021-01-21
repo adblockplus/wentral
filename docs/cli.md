@@ -7,8 +7,8 @@ CLI has two subcommands that are described below.
 
 ## Web service
 
-Wentral can expose any [detector implementation](api.md#implementing-detectors)
-as a [web service](api.md#using-the-web-service) that can be used to perform
+Wentral can expose any [detector implementation](https://eyeo.gitlab.io/machine-learning/wentral/api/#implementing-detectors)
+as a [web service](https://eyeo.gitlab.io/machine-learning/wentral/api/#using-the-web-service) that can be used to perform
 multiple benchmarking runs without reloading the model or as part of production
 setup.
 
@@ -18,7 +18,7 @@ The basic invocation goes like this:
 
 The web service will listen on specified `PORT` (8080 by default), and you can
 interact with it by pointing your browser to `http://localhost:8080/` or
-[programmatically](api.md#using-the-web-service). See `wentral ws -h` for
+[programmatically](https://eyeo.gitlab.io/machine-learning/wentral/api/#using-the-web-service). See `wentral ws -h` for
 description of additional options or see
 [detector arguments description](#detector-arguments) below.
 
@@ -50,7 +50,7 @@ parameters:
 ## Benchmarking
 
 Wentral can also be used to measure the performance of
-[detector implementations](api.md#implementing-detectors):
+[detector implementations](https://eyeo.gitlab.io/machine-learning/wentral/api/#implementing-detectors):
 
     $ wentral bm -d DETECTOR_CLASS DATASET_PATH
 
@@ -127,7 +127,7 @@ context of the screenshot that it comes from.
 ### Similarity data
 
 An additional file with detection/ground truth [similarity
-information](file-formats.md#detection-similarity-data) can be placed into the
+information](https://eyeo.gitlab.io/machine-learning/wentral/file-formats/#detection-similarity-data) can be placed into the
 same directory named `nn.json`. When similarity information is provided,
 similar images are displayed in the zoom in view below the full screenshot (for
 those fragments for which similarity is provided).

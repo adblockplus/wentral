@@ -32,7 +32,7 @@ of `detect` are:
 
 - `image` -- `PIL.Image` object that contains the image for region detection.
 - `path` -- Path/name of the image. Some detectors (e.g.
-  [json and static](cli.md#special-detectors)) use the path instead of the
+  [json and static](https://eyeo.gitlab.io/machine-learning/wentral/cli/#special-detectors)) use the path instead of the
   actual image but ML models typically ignore it.
 
 It can also take additional arguments that override detector parameters for

@@ -20,7 +20,7 @@ To make a web service from a `detector.Class` loading the weights from
 
     $ wentral ws -d detector.Class -w weights/file
 
-See [CLI docs](docs/cli.md#web-service) for more info on usage.
+See [CLI docs](https://eyeo.gitlab.io/machine-learning/wentral/cli/#web-service) for more info on usage.
 
 ## Benchmarks
 
@@ -28,12 +28,12 @@ To benchmark `detector.Class` on a `data/set` run:
 
     $ wentral bm [-v] -d detector.Class -w weights/file data/set
 
-See [CLI docs](docs/cli.md#benchmarking) for more info on usage.
+See [CLI docs](https://eyeo.gitlab.io/machine-learning/wentral/cli/#benchmarking) for more info on usage.
 
 ## Development
 
 Most common scenario will be implementing detectors to use with Wentral. The
-[API docs](api.md) has [more detail](api.md#implementing-detectors) on this.
+[API docs](https://eyeo.gitlab.io/machine-learning/wentral/api/) has [more detail](https://eyeo.gitlab.io/machine-learning/wentral/api/#implementing-detectors) on this.
 
 You are also welcome to contribute to Wentral itself. Make sure the tests still
 pass and the coverage is not reduced. Make sure to follow
